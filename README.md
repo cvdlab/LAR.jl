@@ -2,7 +2,7 @@
 ### Geometric and topological modeling with chain complexes in Julia.
 
 
-**Installation**: `julia> Pkg.add("https://github.com/cvdlab/lar-julia.git")`
+**Installation**: `julia> Pkg.add("git://github.com/cvdlab/LAR.jl.git")`
 
 
 ## Basic Usage
