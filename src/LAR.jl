@@ -42,7 +42,7 @@ function Lar(bases::Array{Any,1})
 	Lar( vv::Array{Any,2}, ev::Array{Any,2}, fv::Array{Any,2}, cv::Array{Any,2} ) 
 end
 
-# the `Basis` type as alias for Sparse binay Matrix by Columns
+# `Basis` type as alias for Sparse binay Matrix by Columns
 typealias Basis SparseMatrixCSC
 
 # `ChainBases` is a quadruple (just 3D, for now) of `Basis` binary matrices 
@@ -271,7 +271,7 @@ function embed(verts::Verts; ndims=1)
 	out = Verts(vs)
 end
 
-translate the columns of `V` matrix by sum with `t` vector
+# translate the columns of `V` matrix by sum with `t` vector
 function translate( t, V )
 	broadcast(+,t,V)
 end
@@ -279,7 +279,7 @@ function translate( V, t )
 	broadcast(+,t,V)
 end
 
-scale the columns of `V` matrix by product times `s` vector
+# scale the columns of `V` matrix by product times `s` vector
 function scale( s, V )
 	broadcast(*,s,V)
 end
@@ -287,7 +287,7 @@ function scale( V, s )
 	broadcast(*,V,s)
 end
 
-rotate the columns of `V` matrix by properly using the `args` parameters
+# rotate the columns of `V` matrix by properly using the `args` parameters
 function rotate(args,V)
 	n = length(args)
 	if n == 1 # rotation in 2D
