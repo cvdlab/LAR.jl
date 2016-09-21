@@ -8,7 +8,7 @@
 ## Basic Usage
 
 ```julia
-import Lar-core
+using LAR
 ```
 
 Generate and visualize a grid of 3-cubes. Poke around with the mouse pressed 
