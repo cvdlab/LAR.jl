@@ -95,16 +95,17 @@ view(verts,cells.VV);
 
 
 v,cv = p.larCuboids((1,2,1))
+viewexploded(v',cv'+1) # input are REQUIRED column-major AND 1-based
 
 v,cv = p.larCuboids((20,20,20));
-viewexploded(v,cv)
+viewexploded(v',cv'+1)
 
 larmodel = p.larCuboids((2,2,2),full=true);
 (v,cc)=larmodel;
 (vv,ev,fv,cv) = cc;
 cc = p.CAT([PyObject(vv),PyObject(ev),PyObject(fv),PyObject(cv)]);
 scaleargs=2;
-viewexploded(v,cc,scaleargs);
+viewexploded(v',rebase(cc),scaleargs);
 
 
 
@@ -116,35 +117,35 @@ mod1 = json2larmodel("""
 """)
 
 
-view(mod1.Verts',mod1.Lar.FV)
-view(mod2.Verts',rebase(mod2.Lar.FV))
-view(embed(mod2.Verts)',rebase(mod2.Lar.FV))
-viewexploded(embed(mod2.Verts)',(mod2.Lar.FV))
+view(mod1.Verts,mod1.Lar.FV)
+view(mod2.Verts,rebase(mod2.Lar.FV))
+view(        embed(mod2.Verts),rebase(mod2.Lar.FV))
+viewexploded(mod2.Verts,rebase(mod2.Lar.FV))
 
 
 
 larmodel = p.larCuboids((1,1));
 (v,fv)=larmodel;
-view(translate(v,[0.5 0.5]),rebase(fv))
+view(translate(v',[0.5; 0.5]),rebase(fv))
 
 larmodel = p.larCuboids((2,2,2));
 (v,cv)=larmodel;
-viewexploded(translate(v,[-2 0 0]),cv,1)
+viewexploded(translate(v',[-2; 0; 0]),rebase(cv),1.2)
 
 
-A = reshape(1:30,3,10);
-s = [1,1/2,1/3];
-scale( A, s );
+A = reshape(1:30,3,10)
+s = [1,1/2,1/3]
+scale( A, s )
 
 larmodel = p.larCuboids((2,2,2));
 (v,cv)=larmodel;
-viewexploded(scale(v,[-1 -1 -1]),cv,1)
+viewexploded(scale(v',[-1; -1; -1]),rebase(cv),1.2)
 
 
 
 larmodel = p.larCuboids((1,1,1));
 (v,cv)=larmodel;
-viewexploded(rotate([1.,1,1],v')',cv);
+viewexploded(rotate([1,1,1],v'),rebase(cv),1.2);
 
 
 

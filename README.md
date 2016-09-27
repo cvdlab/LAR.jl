@@ -26,7 +26,7 @@ viewexploded(v,fv)
 
 Define a visualize a 2-mesh of convex cells. Poke as before
 ```julia
-larstring = """
+jsonmodel = """
 	{"V" : [[5,0],[7,1],[9,0],[13,2],[15,4],[17,8],[14,9],[13,10],
 	[11,11],[9,10],[5,9],[7,9],[3,8],[0,6],[2,3],[2,1],[8,3],
 	[10,2],[13,4],[14,6],[13,7],[12,10],[11,9],[9,7],[7,7],[4,7],
@@ -41,7 +41,7 @@ larstring = """
 	[23,33,34],[24,25,27,36],[24,35,36],[25,26,27],[29,34,35],
 	[29,35,36],[30,31,32,33]]}
 """;
-model = json2larmodel(larstring)
+model = json2larmodel(jsonmodel)
 viewexploded(model.Verts',(model.Lar.FV))
 ```
 

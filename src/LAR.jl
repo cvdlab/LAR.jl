@@ -150,13 +150,13 @@ function listOfList(cellArray::Array{Any,2})
 end
 
 # transform a 0-based array to a 1-based array
-function rebase(faces::Array{Any,1})
-	Any[Int[v+1 for v in face] for face in faces]
+function rebase(faces::Array{Any,1},shift=+1)
+	Any[Int[v+shift for v in face] for face in faces]
 end
 
 # transform a 0-based array to a 1-based array
-function rebase(faces::Array{Any,2})
-	faces + 1
+function rebase(faces::Array{Any,2},shift=+1)
+	faces + shift
 end
 
 # transform a `larlib` pair (varts,bases) into a Julia triple
@@ -184,27 +184,33 @@ function importmodel(larmodel)
 			cells.CV = Vector{Int}[cv[:,i] for i=1:size(cv,2)]
 			chainbases.M3 = cellComplex(cv)
 		end
-		verts,cells,chainbases
+		v,cells,chainbases
 	end
 end
 
 # visualize an HPC value from a Julia pair (Verts,Cells)
-function view(V::Array{Float64,2}, EV::Array{Int32,2})
-	a,b = PyObject(V), PyObject(EV)
+function view(V::Array{Float64,2}, EV::Array{Int64,2})
+	a,b = PyObject(V'), PyObject(EV')
 	verts = PyObject(a[:tolist]())
 	cells = PyObject(b[:tolist]())
 	p.VIEW(p.MKPOL([verts,cells,1]))
 end
 
 # visualize an HPC value from a Julia pair (Verts,Cells)
+function view(V::Array{Float64,2}, EV::Array{Any,2})
+	EV = map(Int64, EV)
+	view(V,EV)
+end
+
+# visualize an HPC value from a Julia pair (Verts,Cells)
 function view(V::Array{Any,2}, EV::Array{Any,1})
-	a,b = PyObject(V), PyObject(EV)
+	a,b = PyObject(V'), PyObject(EV)
 	p.VIEW(p.MKPOL([a,b,1]))
 end
 
 # visualize an HPC value from a Julia pair (Verts,Cells)
 function view(V::Array{Float64,2}, EV::Array{Any,1})
-	a,b = PyObject(V), PyObject(EV)
+	a,b = PyObject(V'), PyObject(EV)
 	verts = PyObject(a[:tolist]())
 	cells = b
 	p.VIEW(p.MKPOL([verts,cells,1]))
@@ -212,7 +218,7 @@ end
 
 # visualize an HPC value from a Julia pair (Verts,Cells)
 function view(V::Array{Any,2}, EV::Array{Any,2})
-	a,b = PyObject(V), PyObject(EV)
+	a,b = PyObject(V'), PyObject(EV')
 	verts = a
 	cells = b
 	p.VIEW(p.MKPOL([verts,cells,1]))
@@ -231,33 +237,48 @@ function scalingargs(scaleargs)
 end
 
 # visualise an exploded `larlib` pair from a Julia pair (Verts,Cells)
-function viewexploded(v::Array{Float64,2}, fv::Array{Any,1}, scaleargs=(1.2,))
+function viewexploded(v::Array{Float64,2}, fv::Array{Any,1}, scaleargs=1.2)
 	sx, sy, sz = scalingargs(scaleargs)
-	a,b = PyObject(v), PyObject(fv)
+	a = PyObject(v')
+	b = PyObject(Array{Any,1}[fv[k]-1 for k in 1:length(fv)])
 	verts = PyObject(a[:tolist]())
 	p.VIEW(p.EXPLODE(sx,sy,sz)(p.MKPOLS((verts,b))))
 end
 
 # visualise an exploded `larlib` pair from a Julia pair (Verts,Cells)
-function viewexploded(v::Array{Any,2}, fv::Array{Any,1}, scaleargs=(1.2,))
+function viewexploded(v::Array{Any,2}, fv::Array{Any,1}, scaleargs=1.2)
 	sx, sy, sz = scalingargs(scaleargs)
-	a,b = PyObject(v), PyObject(fv)
+	verts = PyObject(v')
+	if typeof(verts)==PyObject
+		a = verts
+	else
+		a = PyObject(verts[:tolist]())
+	end
+	b = PyObject(Array{Any,1}[fv[k]-1 for k in 1:length(fv)])
 	p.VIEW(p.EXPLODE(sx,sy,sz)(p.MKPOLS((a,b))))
 end
 
 # visualise an exploded `larlib` pair from a Julia pair (Verts,Cells)
-function viewexploded(v::Array{Float64,2}, fv::Array{Any,2}, scaleargs=(1.2,))
+function viewexploded(v::Array{Float64,2}, fv::Array{Int64,2}, scaleargs=(1.2,))
 	sx, sy, sz = scalingargs(scaleargs)
-	a,b = PyObject(v), PyObject(fv')
+	a,b = PyObject(v'), PyObject(fv'-1)
 	verts = PyObject(a[:tolist]())
-	p.VIEW(p.EXPLODE(sx,sy,sz)(p.MKPOLS((verts,Array[b]-1))))
+	cells = PyObject(b[:tolist]())
+	p.VIEW(p.EXPLODE(sx,sy,sz)(p.MKPOLS((verts,cells))))
+end
+
+# visualise an exploded `larlib` pair from a Julia pair (Verts,Cells)
+function viewexploded(v::Array{Float64,2}, fv::Array{Any,2}, scaleargs=(1.2,))
+	fv = map(Int64, fv)
+	viewexploded(v, fv, scaleargs)
 end
 
 # visualise an exploded `larlib` pair from a Julia pair (Verts,Cells)
 function viewexploded(v::Array{Any,2}, fv::Array{Any,2}, scaleargs=(1.2,))
 	sx, sy, sz = scalingargs(scaleargs)
-	cells = PyObject(map(Int16,fv))[:tolist]()
-	a,b = PyObject(v), PyObject(cells)
+	fv = map(Int,fv)-1
+	cells = [(fv[:,k]) for k in 1:size(fv,2)]
+	a,b = PyObject(v'), PyObject(cells)
 	p.VIEW(p.EXPLODE(sx,sy,sz)(p.MKPOLS((a,b))))
 end
 
@@ -326,5 +347,39 @@ function rotate(args,V)
 	end
 	mat*V
 end
+
+
+# Identify -0.0 values with 0.0 values
+function zeros!(W)
+	for k=1:length(W)
+	   if W[k] == -0.0 W[k] = 0.0 end
+	end
+	W
+end
+
+# vectorized parametric toroidal surface
+function toroidalsurface(r,R,m=40,n=80,angle1=2pi,angle2=2pi)
+	V,FV = p.larCuboids((m,n));
+	V,FV = map(Float64,V), map(Int64,FV)
+	V = (scale(V, [angle1/m angle2/n]))
+	x =  (R .+ r.*cos(V[:,1])) .* cos(V[:,2])
+	y =  (R .+ r.*cos(V[:,1])) .* sin(V[:,2])
+	z = -r .* sin(V[:,1])
+	[x y z]', (FV+1)'
+end
+
+function convertindex(W,vdict)
+	[vdict[ string(zeros!(map(round,W[:,k]*10^5)/10^5)) ] for k=1:size(W,2)]
+end
+
+function invertindex(index)
+	n = max(index...)
+	out = round(Int,zeros(n))
+	for k=1:length(index)
+		out[index[k]] = k
+	end
+	out
+end
+
 
 # end # module Lar-core
