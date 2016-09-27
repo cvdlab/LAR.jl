@@ -357,19 +357,63 @@ function zeros!(W)
 	W
 end
 
+
 # vectorized parametric toroidal surface
-function toroidalsurface(r,R,m=40,n=80,angle1=2pi,angle2=2pi)
-	V,FV = p.larCuboids((m,n));
-	V,FV = map(Float64,V), map(Int64,FV)
+function toroidalmap(V,r,R,m=40,n=80,angle1=2pi,angle2=2pi)
+	V = map(Float64,V)
 	V = (scale(V, [angle1/m angle2/n]))
 	x =  (R .+ r.*cos(V[:,1])) .* cos(V[:,2])
 	y =  (R .+ r.*cos(V[:,1])) .* sin(V[:,2])
 	z = -r .* sin(V[:,1])
-	[x y z]', (FV+1)'
+	[x y z]'
 end
 
-function convertindex(W,vdict)
-	[vdict[ string(zeros!(map(round,W[:,k]*10^5)/10^5)) ] for k=1:size(W,2)]
+
+# valid (closed, i.e. no boundary) toroidal surface
+function toroidalsurface(r,R,m=10,n=20,angle1=2pi,angle2=2pi)
+	larmodel = p.larCuboids((m,n),true)
+	verts,cells,chainbases = importmodel(larmodel)
+	V = toroidalmap(verts',r,R,m,n)
+	W,newcells,oldindex = larvalidate(V,cells)
+	Z = map(Float64,hcat([V[:,k] for k in oldindex]...))
+	Z,newcells
+end
+
+# topological validation of cellular complexes 
+function larvalidate(V,lar,precision=10^5)
+	W = zeros!(map(round, V*precision)/precision)
+	vdict = Dict([ ("$(W[:,k])",k) for k=1:size(W,2) ])
+	verts = Dict(zip( keys(vdict), 1:length(vdict) ))
+	newindex = convertindex(W,verts,precision)
+	oldindex = invertindex(newindex)
+	vs = [eval(parse(key))' for key in keys(vdict)]
+	W = vcat(vs...)'
+	newcells = Lar()
+	FW = relink(lar.FV,newindex)
+	EW = relink(lar.EV,newindex)
+	VW = relink(lar.VV,newindex)
+	newcells.FV = [ FW[:,k][:] for k=1:size(FW,2) ]
+	newcells.EV = [ EW[:,k][:] for k=1:size(EW,2) ]
+	newcells.VV = [ VW[:,k][:] for k=1:size(VW,2) ]
+	W,newcells,oldindex
+end
+
+# relinking of chain basis (d-cells, named FV) after topology validation
+function relink(basis,newindex)
+	m0,n0 = length(basis),length(basis[1])
+	FV = reshape([basis...],n0,m0)
+	FW = round(Int64, zeros(size(FV)))
+	for k in 1:size(FV,2)
+		for h in 1:size(FV,1)
+			FW[h,k] = newindex[FV[h,k]]
+		end
+	end
+	FW
+end
+
+# mapping between vertex indexing in dictionary and old indexing
+function convertindex(W,vdict,precision)
+	[vdict[ string(zeros!(map(round,W[:,k]*precision)/precision)) ] for k=1:size(W,2)]
 end
 
 function invertindex(index)
