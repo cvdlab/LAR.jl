@@ -190,6 +190,7 @@ end
 
 # visualize an HPC value from a Julia pair (Verts,Cells)
 function view(V::Array{Float64,2}, EV::Array{Int64,2})
+	EV = map(Int32, EV)
 	a,b = PyObject(V'), PyObject(EV')
 	verts = PyObject(a[:tolist]())
 	cells = PyObject(b[:tolist]())
@@ -399,6 +400,8 @@ function larvalidate(V,lar,precision=10^5)
 end
 
 # relinking of chain basis (d-cells, named FV) after topology validation
+# including removal of multiple vertices (TODO ...)
+# and 
 function relink(basis,newindex)
 	m0,n0 = length(basis),length(basis[1])
 	FV = reshape([basis...],n0,m0)
@@ -407,6 +410,8 @@ function relink(basis,newindex)
 		for h in 1:size(FV,1)
 			FW[h,k] = newindex[FV[h,k]]
 		end
+		FW[:,k] = sort(FW[:,k])
+		println(FW[:,k])
 	end
 	FW
 end
