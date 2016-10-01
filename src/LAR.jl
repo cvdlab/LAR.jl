@@ -324,7 +324,7 @@ function translate( t, V )
 	broadcast(+,t,V)
 end
 function translate( V, t )
-	broadcast(+,t,V)
+	translate( t, V )
 end
 
 # scale the columns of `V` matrix by product times `s` vector
@@ -332,7 +332,7 @@ function scale( s, V )
 	broadcast(*,s,V)
 end
 function scale( V, s )
-	broadcast(*,V,s)
+	scale( s, V )
 end
 
 # rotate the columns of `V` matrix by properly using the `args` parameters
