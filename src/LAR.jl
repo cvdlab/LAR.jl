@@ -85,6 +85,18 @@ function cellComplex(cells::Array{Any,2})
 	sparse(I,J,V)
 end
 
+# constructor of a Basis instance from its cells
+function cellComplex(cells::Array{Int64,2})
+	I,J,V = Int[],Int[],Int[]
+	m,n = size(cells)
+	for i=1:m
+		for j=1:n
+			push!(I,cells[i,j]); push!(J,j); push!(V,1)
+		end
+	end
+	sparse(I,J,V)
+end
+
 # constructor of an empty Basis instance
 function cellComplex()
 	sparse(Int[],Int[],Int[])
@@ -260,6 +272,12 @@ function viewexploded(v::Array{Any,2}, fv::Array{Any,1}, scaleargs=1.2)
 end
 
 # visualise an exploded `larlib` pair from a Julia pair (Verts,Cells)
+function viewexploded(v::Array{Int64,2}, fv::Array{Int64,2}, scaleargs=(1.2,))
+	v = map(Float64,v)
+	viewexploded(v, fv, scaleargs)
+end
+
+# visualise an exploded `larlib` pair from a Julia pair (Verts,Cells)
 function viewexploded(v::Array{Float64,2}, fv::Array{Int64,2}, scaleargs=(1.2,))
 	sx, sy, sz = scalingargs(scaleargs)
 	a,b = PyObject(v'), PyObject(fv'-1)
@@ -278,6 +296,14 @@ end
 function viewexploded(v::Array{Any,2}, fv::Array{Any,2}, scaleargs=(1.2,))
 	sx, sy, sz = scalingargs(scaleargs)
 	fv = map(Int,fv)-1
+	cells = [(fv[:,k]) for k in 1:size(fv,2)]
+	a,b = PyObject(v'), PyObject(cells)
+	p.VIEW(p.EXPLODE(sx,sy,sz)(p.MKPOLS((a,b))))
+end
+
+function viewexploded(v::Array{Any,2}, fv::Array{Int64,2}, scaleargs=(1.2,))
+	sx, sy, sz = scalingargs(scaleargs)
+	fv = fv-1
 	cells = [(fv[:,k]) for k in 1:size(fv,2)]
 	a,b = PyObject(v'), PyObject(cells)
 	p.VIEW(p.EXPLODE(sx,sy,sz)(p.MKPOLS((a,b))))
@@ -381,11 +407,11 @@ function toroidalsurface(r,R,m=10,n=20,angle1=2pi,angle2=2pi)
 end
 
 # topological validation of cellular complexes 
-function larvalidate(V,lar,precision=10^5)
-	W = zeros!(map(round, V*precision)/precision)
+function larvalidate(V,lar,prec=10^5) # prec for precision
+	W = zeros!(map(round, V*prec)/prec)
 	vdict = Dict([ ("$(W[:,k])",k) for k=1:size(W,2) ])
 	verts = Dict(zip( keys(vdict), 1:length(vdict) ))
-	newindex = convertindex(W,verts,precision)
+	newindex = convertindex(W,verts,prec)
 	oldindex = invertindex(newindex)
 	vs = [eval(parse(key))' for key in keys(vdict)]
 	W = vcat(vs...)'
@@ -404,7 +430,7 @@ end
 # and 
 function relink(basis,newindex)
 	m0,n0 = length(basis),length(basis[1])
-	FV = reshape([basis...],n0,m0)
+	FV = reshape(vcat(basis...),n0,m0)
 	FW = round(Int64, zeros(size(FV)))
 	for k in 1:size(FV,2)
 		for h in 1:size(FV,1)
