@@ -9,7 +9,7 @@
 
 using LAR
 
-view(randomLines(10000,0.1)...)
+view(randomLines(1000,0.1)...)
 
 randomLineArray = randomLines(200,0.2)
 lines = p.AA(polyline)(linesFromLineArray(randomLineArray...))
