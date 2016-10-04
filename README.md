@@ -45,6 +45,15 @@ model = json2larmodel(jsonmodel)
 viewexploded(model.Verts',(model.Lar.FV))
 ```
 
+```julia
+lardict = JSON.parse(jsonmodel)
+V = lardict["V"]
+FV = lardict["FV"]
+v,fv = p.larFacets((V,FV),2)
+viewexploded(v,fv)
+```
+
+
 ## Documentation
 
 Very first basic implementation and interface with Python's `larlib`

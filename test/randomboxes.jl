@@ -8,14 +8,15 @@
 # coordinates, and $(x2,y2)$ is the point of maximal  coordinates.
 
 using LAR
+include("src/inters.jl")
 
 view(randomLines(1000,0.1)...)
 
 randomLineArray = randomLines(200,0.2)
-lines = p.AA(polyline)(linesFromLineArray(randomLineArray...))
+lines = lar2hpc(randomLineArray...)
+yellow = p.COLOR(p.YELLOW)(lines)
 boxes = containment2DBoxes(randomLineArray...)
-rects = p.AA(box2rect)(boxes)
+rects = [box2rect(box) for box in boxes]
 polylines = p.AA(polyline)(rects)
-yellow = p.COLOR(p.YELLOW)(p.STRUCT(lines))
 cyan = p.COLOR(p.CYAN)(p.STRUCT(polylines))
 p.VIEW(p.STRUCT([yellow,cyan]))

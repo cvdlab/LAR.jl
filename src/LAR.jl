@@ -200,6 +200,28 @@ function importmodel(larmodel)
 	end
 end
 
+function lar2hpc(V::Array{Float64,2}, EV::Array{Any,1})
+	EV = map(Int32, EV)
+	lar2hpc(V,EV)
+end
+
+function lar2hpc(V::Array{Float64,2}, EV::Array{Array{Int64,1},1})
+	EV = hcat(EV...)
+	lar2hpc(V,EV)
+end
+
+function lar2hpc(V::Array{Float64,2}, EV::Array{Array{Int64,1},1})
+	EV = map(Any, EV)
+	lar2hpc(V,EV)
+end
+
+function lar2hpc(V::Array{Float64,2}, EV::Array{Int32,2})
+	a,b = PyObject(V'), PyObject(EV')
+	verts = PyObject(a[:tolist]())
+	cells = PyObject(b[:tolist]())
+	p.MKPOL([verts,cells,1])
+end
+
 function lar2hpc(V::Array{Float64,2}, EV::Array{Int64,2})
 	EV = map(Int32, EV)
 	a,b = PyObject(V'), PyObject(EV')
@@ -226,7 +248,20 @@ function view(V::Array{Any,2}, EV::Array{Any,1})
 end
 
 # visualize an HPC value from a Julia pair (Verts,Cells)
+function lar2hpc(V::Array{Float64,2}, EV::Array{Any,1})
+	a,b = PyObject(V'), PyObject(EV)
+	verts = PyObject(a[:tolist]())
+	cells = b
+	p.MKPOL([verts,cells,1])
+end
+
+# visualize an HPC value from a Julia pair (Verts,Cells)
 function view(V::Array{Float64,2}, EV::Array{Any,1})
+	p.VIEW(lar2hpc(V,EV))
+end
+
+# visualize an HPC value from a Julia pair (Verts,Cells)
+function view(V::Array{Float64,2}, EV::Array{Array{Int64,1},1})
 	a,b = PyObject(V'), PyObject(EV)
 	verts = PyObject(a[:tolist]())
 	cells = b

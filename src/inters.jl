@@ -76,3 +76,62 @@ function linesFromLineArray(V,EV)
 	result
 end
 
+# Computation of the 1D centroid of a list of 2D boxes. The direction  
+# is chosen depending on the value of the `xy in Set([1,2])` parameter. 
+function centroid(boxes,xy)
+	average = mean(boxes)
+	n = Int(length(average)/2)
+	median = (average[xy] + average[xy+n])/2
+end
+
+# Splitting the input above and below a median threshold
+function splitOnThreshold(boxes,subset,coord)
+    theBoxes = [boxes[k] for k in subset]
+    threshold = centroid(theBoxes,coord)
+    ncoords = length(boxes[1])
+    a = coord % ncoords
+    b = Int(a + ncoords/2)
+    below,above = Int[],Int[]
+    for k in subset
+        if boxes[k][a] <= threshold 
+        	push!(below, k) end 
+    end
+    for k in subset
+        if boxes[k][b] >= threshold
+        	push!(above, k) end 
+    end
+    Set{Int64}(below), Set{Int64}(above)
+end
+
+# Iterative splitting of a box array
+function boxBuckets(boxes)
+    bucket = Set(1:length(boxes))
+    splittingStack = [bucket]
+    finalBuckets = []
+    
+    # local function
+	function splitting(bucket,below,above, finalBuckets,splittingStack)
+		a = length(below)<4 & length(above) < 4
+		b = length(setdiff(bucket,below)) < 4 
+		c = length(setdiff(bucket,above)) < 4
+		if ( a | b | c )
+			push!(finalBuckets, [below]) 
+			push!(finalBuckets, [above]) 
+		else
+			push!(splittingStack, below) 
+			push!(splittingStack, above) 
+		end
+	end
+
+    while splittingStack != []
+        bucket = pop!(splittingStack)
+        below,above = splitOnThreshold(boxes,bucket,1)
+        below1,above1 = splitOnThreshold(boxes,above,2)
+        below2,above2 = splitOnThreshold(boxes,below,2)
+        splitting(above,below1,above1, finalBuckets,splittingStack)
+        splitting(below,below2,above2, finalBuckets,splittingStack)      
+    end
+    finalBuckets = vcat(finalBuckets...)
+end
+
+
