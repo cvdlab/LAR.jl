@@ -81,16 +81,21 @@ end
 function centroid(boxes,xy)
 	average = mean(boxes)
 	n = Int(length(average)/2)
-	median = (average[xy] + average[xy+n])/2
+	if xy == 1
+		median = (average[2] + average[2+n])/2
+	elseif xy == 2
+		median = (average[1] + average[1+n])/2
+	end
 end
+
 
 # Splitting the input above and below a median threshold
 function splitOnThreshold(boxes,subset,coord)
     theBoxes = [boxes[k] for k in subset]
     threshold = centroid(theBoxes,coord)
-    ncoords = length(boxes[1])
-    a = coord % ncoords
-    b = Int(a + ncoords/2)
+    ncoords = Int(floor(length(boxes[1])/2))
+    a = coord % ncoords +1
+    b = Int(a + ncoords)
     below,above = Int[],Int[]
     for k in subset
         if boxes[k][a] <= threshold 
@@ -103,35 +108,49 @@ function splitOnThreshold(boxes,subset,coord)
     Set{Int64}(below), Set{Int64}(above)
 end
 
+function geomPartitionate(boxes,buckets)
+    geomInters = [Set{Int64}() for h=1:length(boxes)]
+    for bucket in buckets
+        for k in bucket
+            geomInters[k] = union(geomInters[k],bucket)
+        end
+    end
+    for (h,inters) in enumerate(geomInters)
+        geomInters[h] = setdiff(geomInters[h],Set([h]))
+    end
+    geomInters
+end
+
+# local function
+function splitting(bucket,below,above, finalBuckets,splittingStack)
+	a = (length(below)<4) & (length(above)<4)
+	b = length(setdiff(bucket,below)) < 7 
+	c = length(setdiff(bucket,above)) < 7
+	if ( a | b | c )
+		push!(finalBuckets, below) 
+		push!(finalBuckets, above) 
+	else
+		push!(splittingStack, below) 
+		push!(splittingStack, above) 
+	end
+end
+
 # Iterative splitting of a box array
 function boxBuckets(boxes)
     bucket = Set(1:length(boxes))
     splittingStack = [bucket]
-    finalBuckets = []
-    
-    # local function
-	function splitting(bucket,below,above, finalBuckets,splittingStack)
-		a = length(below)<4 & length(above) < 4
-		b = length(setdiff(bucket,below)) < 4 
-		c = length(setdiff(bucket,above)) < 4
-		if ( a | b | c )
-			push!(finalBuckets, [below]) 
-			push!(finalBuckets, [above]) 
-		else
-			push!(splittingStack, below) 
-			push!(splittingStack, above) 
-		end
-	end
-
+    finalBuckets = Set{Int64}[]
     while splittingStack != []
         bucket = pop!(splittingStack)
         below,above = splitOnThreshold(boxes,bucket,1)
         below1,above1 = splitOnThreshold(boxes,above,2)
         below2,above2 = splitOnThreshold(boxes,below,2)
         splitting(above,below1,above1, finalBuckets,splittingStack)
-        splitting(below,below2,above2, finalBuckets,splittingStack)      
+        splitting(below,below2,above2, finalBuckets,splittingStack)  
+        finalBuckets = vcat(finalBuckets...)    
     end
-    finalBuckets = vcat(finalBuckets...)
+    parts = geomPartitionate(boxes,finalBuckets)
+    [sort([h for h in parts[k]]) for k=1:length(parts)]
 end
 
 
