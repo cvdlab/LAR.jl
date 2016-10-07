@@ -63,23 +63,63 @@ function lineIntersection(lineArray)
 	end
 	boxes = containment2DBoxes(lineArray...)
 	buckets = boxBuckets(boxes)
-	intersectionPoints = Set{Array{Float64,1}}()
     for (h,bucket) in enumerate(buckets)
         pointBucket = lineBucketIntersect(boxes,lineArray, h,bucket, lineStorage)
-        intersectionPoints = union(intersectionPoints,Set{Array{Float64,1}}(pointBucket))
+        #intersectionPoints = union(intersectionPoints,Set{Array{Float64,1}}(pointBucket))
     end
     frags = keys(lineStorage)
     params = [sort([x for x in Set(vcode(group))]) for group in values(lineStorage)]
-    intersections = hcat([p for p in intersectionPoints]...)
-    intersections,Dict(zip(frags,params))
+    lineFrags = Dict(zip(frags,params))
 end
 
 
-include("src/inters.jl")
+function lines2lar(lineArray)
+	lineFrags = lineIntersection(lineArray)
+	pointStorage = Dict{Array{Float64,1},Int64}()
+	EV = Array{Any,1}()
+	vert = 1
+	for line in lineFrags
+		# storage of lar vertices
+		v1, v2 = vcode(line[1][:,1]), vcode(line[1][:,2])  
+		params = line[2]
+		if get(pointStorage,v1,0)==0
+			pointStorage[v1] = vert; vert += 1 
+		end
+		if get(pointStorage,v2,0)==0
+			pointStorage[v2] = vert; vert += 1 
+		end
+		# storage of lar edges
+		if params != Float64[]
+			index = [pointStorage[v1]]
+			for alpha in params
+				v = vcode(v1+alpha*(v2-v1))
+				if get(pointStorage,v,0)==0
+					pointStorage[v] = vert; vert += 1 
+				end
+				push!(index, pointStorage[v])
+			end
+			push!(index, pointStorage[v2])
+			# storage of fragmented lines
+			for k=1:length(index)-1
+				push!(EV, [index[k],index[k+1]])
+			end
+		else
+			# storage of old lines
+			push!(EV, [pointStorage[v1], pointStorage[v2]])
+		end
+	end
+	vertices = [p for p in keys(pointStorage)]
+	V,EV = hcat(vertices...), hcat(EV...)
+end
+
+
+
+#include("src/inters.jl")
 lineArray = randomLines(400,0.2)
 V,EV = lineArray
 [(V[:,EV[1,k]], V[:,EV[2,k]]) for k=1:size(EV,2)]
-intPoints,lineFrags = lineIntersection(lineArray)
+
+V,EV = lines2lar(lineArray)
 
 
 V = [[1.,0] [1.,1] [-1,0] [2,0] [0,-1] [1,-1]]
