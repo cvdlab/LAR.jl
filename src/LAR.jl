@@ -455,12 +455,18 @@ function larvalidate(V,lar,prec=10^5) # prec for precision
 	vs = [eval(parse(key))' for key in keys(vdict)]
 	W = vcat(vs...)'
 	newcells = Lar()
-	FW = relink(lar.FV,newindex)
-	EW = relink(lar.EV,newindex)
-	VW = relink(lar.VV,newindex)
-	newcells.FV = [ FW[:,k][:] for k=1:size(FW,2) ]
-	newcells.EV = [ EW[:,k][:] for k=1:size(EW,2) ]
-	newcells.VV = [ VW[:,k][:] for k=1:size(VW,2) ]
+	if FW != []
+		FW = relink(lar.FV,newindex)
+		newcells.FV = [ FW[:,k][:] for k=1:size(FW,2) ] 
+	end
+	if EW != []
+		EW = relink(lar.EV,newindex)
+		newcells.EV = [ EW[:,k][:] for k=1:size(EW,2) ]
+	end
+	if VW != []
+		VW = relink(lar.VV,newindex)
+		newcells.VV = [ VW[:,k][:] for k=1:size(VW,2) ]
+	end
 	W,newcells,oldindex
 end
 

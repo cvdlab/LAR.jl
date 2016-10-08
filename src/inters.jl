@@ -229,14 +229,14 @@ function lineIntersection(lineArray)
 end
 
 # Transform a lineArray (Array of pairs of 2D points) into (V,EV)
-function lines2lar(lineArray)
+function lines2lar(lineArray,prec=10^4)
 	lineFrags = lineIntersection(lineArray)
 	pointStorage = Dict{Array{Float64,1},Int64}()
 	EV = Array{Any,1}()
 	vert = 1
 	for line in lineFrags
 		# storage of lar vertices
-		v1, v2 = vcode(line[1][:,1]), vcode(line[1][:,2])  
+		v1, v2 = vcode(line[1][:,1],prec), vcode(line[1][:,2], prec)  
 		params = line[2]
 		if get(pointStorage,v1,0)==0
 			pointStorage[v1] = vert; vert += 1 
@@ -248,7 +248,7 @@ function lines2lar(lineArray)
 		if params != Float64[]
 			index = [pointStorage[v1]]
 			for alpha in params
-				v = vcode(v1+alpha*(v2-v1))
+				v = vcode(v1+alpha*(v2-v1),prec)
 				if get(pointStorage,v,0)==0
 					pointStorage[v] = vert; vert += 1 
 				end
