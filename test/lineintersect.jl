@@ -18,7 +18,7 @@ viewexploded(W,EW)
 lineArray = randomLines(2000,0.2);
 V,EV = lines2lar(lineArray);
 hpcLines = lar2hpc(V,EV);
-marker = p.CIRCLE(.002)([4,1]);
+marker = p.CIRCLE(.002)([3,1]);
 verts = PyObject(PyObject(V')[:tolist]());
 markers = p.STRUCT(p.CONS(p.AA(p.T([1,2]))(verts))(marker));
 redMarkers = p.COLOR(p.RED)(markers);

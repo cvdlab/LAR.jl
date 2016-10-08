@@ -1,0 +1,4 @@
+*	remove multiple vertices from Lar.EV and from other bases
+*	remove edges with less than two distinct vertices from Lar.EV
+*	remove faces with less than three distinct vertices from Lar.FV
+*	remove cells with less than four distinct vertices from Lar.CV
