@@ -44,28 +44,27 @@ end
 
 # Hopcroft-Tarjan algorithm 
 function DFV_visit( VV,out,count,visited,parent,d,low,stack,u )
-	#println(">> INIZIO *****")
     visited[u] = true
     count += 1
     d[u] = count
     low[u] = d[u]
+    if u > length(VV) return() end
     for v in VV[u] 
-    	#println("v = $v")
         if !visited[v]
-            push!(stack, [(u,v)])   # possible bug: []
-            #println("stack = $stack")
+            push!(stack, (u,v))   # possible bug: []
+            println("stack = $stack")
             parent[v] = u
-            #println("out = $out")
             DFV_visit( VV,out,count,visited,parent,d,low,stack, v )
             if low[v] >= d[u]
-            	#println(">> sono io")
                 push!(out,outputComp(stack,u,v))
                 println("\tout = $out")
+                println("\tv = $v")
+                if v == length(VV) return() end
             end
             low[u] = min( low[u], low[v] )
         else
             if ! (parent[u]==v) & (d[v] < d[u])
-                push!(stack, [(u,v)])   # possible bug: []
+                push!(stack, (u,v))   # possible bug: []
                 low[u] = min( low[u], d[v] )
             end
         end
@@ -77,11 +76,8 @@ function outputComp(stack,u,v)
     out = []
     while true
         elem = pop!(stack)
-		#println("stack = $stack")
-		#println(">>> eccomi !!")
         push!(out, elem)
         if elem == (u,v) 
-        	#println(">>> break !!")
         	break
         end
     end
