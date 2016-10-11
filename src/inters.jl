@@ -180,10 +180,10 @@ function segmentIntersect(boxes,lineArray,lineStorage)
                     m_inv = inv(m)
                     alpha, beta = m_inv*v
                     if (-0.0<=alpha<=1.0) & (-0.0<=beta<=1.0)
-                    	if 0.0 != vcode(alpha)[1] != 1.0
+                    	if 0.0 != vcode([alpha])[1] != 1.0
                         	push!(lineStorage[line1], alpha) 
                         end
-                    	if 0.0 != vcode(alpha)[1] != 1.0
+                    	if 0.0 != vcode([alpha])[1] != 1.0
 	                        push!(lineStorage[line2], beta)
 	                    end
                         return p1+alpha*(p2-p1)
