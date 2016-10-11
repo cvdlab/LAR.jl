@@ -269,7 +269,5 @@ function lines2lar(lineArray,prec=10^4)
 	sorted = sort([(x,y) for (x,y) in collect(invPointStorage)])
 	vertices = [p for (i,p) in sorted]
 	V,EV = hcat(vertices...), hcat(EV...)
-	# remove empty edges
-	V,EV = hcat([EV[:,k]  for k=1:size(EV,2) if EV[1,k]!=EV[2,k]]...)
 end
 

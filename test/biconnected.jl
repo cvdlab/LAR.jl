@@ -89,10 +89,11 @@ end
 
 datafile = readcsv("test/svg/test1.lines")
 V = reshape(datafile',(size(datafile',1)÷2,size(datafile',2)*2))
-values = length(datafile)
-EV = collect(reshape(1:(values÷2), 2,(values÷4)))
+len = length(datafile)
+EV = collect(reshape(1:(len÷2), 2,(len÷4)))
 view(V,EV)
-W,EW = lines2lar((V,EV))
+lineArray = (V,EV)
+W,EW = lines2lar(lineArray)
 lar = Lar()
 lar.EV = EW
 W,newcells,oldindex = larvalidate(lar)
