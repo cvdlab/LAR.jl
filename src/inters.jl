@@ -180,8 +180,12 @@ function segmentIntersect(boxes,lineArray,lineStorage)
                     m_inv = inv(m)
                     alpha, beta = m_inv*v
                     if (-0.0<=alpha<=1.0) & (-0.0<=beta<=1.0)
-                        push!(lineStorage[line1], alpha)
-                        push!(lineStorage[line2], beta)
+                    	if 0.0 != vcode(alpha)[1] != 1.0
+                        	push!(lineStorage[line1], alpha) 
+                        end
+                    	if 0.0 != vcode(alpha)[1] != 1.0
+	                        push!(lineStorage[line2], beta)
+	                    end
                         return p1+alpha*(p2-p1)
                     end
                 end
@@ -221,7 +225,6 @@ function lineIntersection(lineArray)
 	buckets = boxBuckets(boxes)
     for (h,bucket) in enumerate(buckets)
         pointBucket = lineBucketIntersect(boxes,lineArray, h,bucket, lineStorage)
-        #intersectionPoints = union(intersectionPoints,Set{Array{Float64,1}}(pointBucket))
     end
     frags = keys(lineStorage)
     params = [sort([x for x in Set(vcode(group))]) for group in values(lineStorage)]
