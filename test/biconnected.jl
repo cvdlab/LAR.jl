@@ -95,13 +95,13 @@ view(V,EV)
 lineArray = (V,EV)
 W,EW = lines2lar(lineArray)
 lar = Lar()
-lar.EV = EW
-W,newcells,oldindex = larvalidate(lar)
+lar.EV = [EW[:,k] for k=1:size(EW,2)]
+W,newcells,oldindex = larvalidate(W,lar)
 EW = newcells.EV
 viewexploded(W,EW)
 
 
-lineArray = randomLines(300,5);
+lineArray = randomLines(30,.5);
 V,EV = lines2lar(lineArray);
 viewexploded(V,EV)
 VV = vertices2vertices(V,EV)
