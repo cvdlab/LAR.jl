@@ -270,6 +270,6 @@ function lines2lar(lineArray,prec=10^4)
 	vertices = [p for (i,p) in sorted]
 	V,EV = hcat(vertices...), hcat(EV...)
 	# remove empty edges
-	EV = hcat([EV[:,k]  for k=1:size(EV,2) if EV[1,k]!=EV[2,k]]...)
+	V,EV = hcat([EV[:,k]  for k=1:size(EV,2) if EV[1,k]!=EV[2,k]]...)
 end
 

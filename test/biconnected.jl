@@ -87,15 +87,26 @@ function outputComp(stack,u,v)
 end
 
 
+datafile = readcsv("test/svg/test1.lines")
+V = reshape(datafile',(size(datafile',1)÷2,size(datafile',2)*2))
+values = length(datafile)
+EV = collect(reshape(1:(values÷2), 2,(values÷4)))
+view(V,EV)
+W,EW = lines2lar((V,EV))
+lar = Lar()
+lar.EV = EW
+W,newcells,oldindex = larvalidate(lar)
+EW = newcells.EV
+viewexploded(W,EW)
 
 
-lineArray = randomLines(100,0.5);
+lineArray = randomLines(300,5);
 V,EV = lines2lar(lineArray);
 viewexploded(V,EV)
 VV = vertices2vertices(V,EV)
 model = V,EV
 
-W,EW = biconnectedComponent(V,EV)
-view(W,EW)
-viewexploded(W,EW)
+EW = biconnectedComponent(V,EV)
+view(V,EW)
+viewexploded(V,EW)
 
