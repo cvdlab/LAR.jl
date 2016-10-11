@@ -37,7 +37,9 @@ function biconnectedComponent(W,EV)
             DFV_visit( VV,out,count,visited,parent,d,low,stack, u )
         end
     end
-    W,[component for component in out if length(component) > 1]
+    out = [component for component in out if length(component) > 1]
+    EV = [[u,v] for (u,v) in vcat(out...)]
+    hcat(EV...)
 end
 
 
@@ -52,13 +54,13 @@ function DFV_visit( VV,out,count,visited,parent,d,low,stack,u )
     for v in VV[u] 
         if !visited[v]
             push!(stack, (u,v))   # possible bug: []
-            println("stack = $stack")
+            #println("stack = $stack")
             parent[v] = u
             DFV_visit( VV,out,count,visited,parent,d,low,stack, v )
             if low[v] >= d[u]
                 push!(out,outputComp(stack,u,v))
-                println("\tout = $out")
-                println("\tv = $v")
+                #println("\tout = $out")
+                #println("\tv = $v")
                 if v == length(VV) return() end
             end
             low[u] = min( low[u], low[v] )
@@ -82,17 +84,18 @@ function outputComp(stack,u,v)
         end
     end
     out
-    #list(set(AA(tuple)(AA(sorted)(out))))
 end
 
 
 
 
-lineArray = randomLines(10,1.2);
+lineArray = randomLines(100,0.5);
 V,EV = lines2lar(lineArray);
 viewexploded(V,EV)
 VV = vertices2vertices(V,EV)
 model = V,EV
 
-biconnectedComponent(V,EV)
+W,EW = biconnectedComponent(V,EV)
+view(W,EW)
+viewexploded(W,EW)
 
