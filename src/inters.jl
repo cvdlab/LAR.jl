@@ -231,7 +231,7 @@ function lineIntersection(lineArray)
     lineFrags = Dict(zip(frags,params))
 end
 
-# Transform a lineArray (Array of pairs of 2D points) into (V,EV)
+# Transform a lineArray (Array of pairs of 2D points) into a 1-complex (V,EV)
 function lines2lar(lineArray,prec=10^4)
 	lineFrags = lineIntersection(lineArray)
 	pointStorage = Dict{Array{Float64,1},Int64}()
@@ -274,3 +274,87 @@ function lines2lar(lineArray,prec=10^4)
 	V,EV = hcat(vertices...), hcat(EV...)
 end
 
+
+
+
+
+# Adjacency lists of 1-complex vertices 
+function vertices2vertices(V,EV)
+	lar = Lar()
+	lar.EV = [EV[:,k] for k=1:size(EV,2)]
+	ev = cellComplex(lar.EV)
+	vv = ev'*ev
+	triples = hcat(findnz(vv)...)'
+	VV = [Int64[] for k=1:size(vv,1)]
+	for k=1:size(triples,2)
+		row,col,datum = triples[:,k]
+		if row != col
+			push!(VV[col],row)
+		end
+	end
+	return VV
+end
+
+# Main procedure for biconnected components 
+function biconnectedComponents(W,EV)
+    V = 1:length(W)
+    count = 0
+    stack,out = [],[]
+    visited = [false for v in V]
+    parent = [-1 for v in V]
+    d = [-1 for v in V]
+    low = [-1 for v in V]
+    VV = vertices2vertices(W,EV)
+    for u in V
+        if !visited[u]
+            DFV_visit( VV,out,count,visited,parent,d,low,stack, u )
+        end
+    end
+    out = [component for component in out if length(component) > 1]
+    EV = [[u,v] for (u,v) in vcat(out...)]
+    W,hcat(EV...)
+end
+
+
+
+# Hopcroft-Tarjan algorithm 
+function DFV_visit( VV,out,count,visited,parent,d,low,stack,u )
+    visited[u] = true
+    count += 1
+    d[u] = count
+    low[u] = d[u]
+    if u > length(VV) return() end
+    for v in VV[u] 
+        if !visited[v]
+            push!(stack, (u,v))   # possible bug: []
+            #println("stack = $stack")
+            parent[v] = u
+            DFV_visit( VV,out,count,visited,parent,d,low,stack, v )
+            if low[v] >= d[u]
+                push!(out,outputComp(stack,u,v))
+                #println("\tout = $out")
+                #println("\tv = $v")
+                if v == length(VV) return() end
+            end
+            low[u] = min( low[u], low[v] )
+        else
+            if ! (parent[u]==v) & (d[v] < d[u])
+                push!(stack, (u,v))   # possible bug: []
+                low[u] = min( low[u], d[v] )
+            end
+        end
+    end
+end
+
+# Output of biconnected components 
+function outputComp(stack,u,v)
+    out = []
+    while true
+        elem = pop!(stack)
+        push!(out, elem)
+        if elem == (u,v) 
+        	break
+        end
+    end
+    out
+end
