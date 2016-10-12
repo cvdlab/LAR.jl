@@ -351,7 +351,6 @@ end
 # embed vertices array in a higher dimensional space, adding `ndims` zero coords
 function embed(verts::Verts; ndims=1)
 	vs = copy(verts)
-	println(typeof(vs))
 	thetype = typeof(vs[1,1])
 	added = zeros(thetype, (ndims, size(vs)[2]))
 	vs = [vs ; added]
@@ -482,7 +481,6 @@ function relink(basis,newindex)
 			FW[h,k] = newindex[FV[h,k]]
 		end
 		FW[:,k] = sort(FW[:,k])
-		println(FW[:,k])
 	end
 	FW
 end
@@ -518,7 +516,7 @@ function printLar(modelname, model)
 		close(out_file)
 	end
 	
-	# Cell file
+	# vertex file
 	filename = join([modelname,".V"])
 	writefile(filename,V)
 	# cell file
