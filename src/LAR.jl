@@ -501,5 +501,39 @@ function invertindex(index)
 	out
 end
 
+# Printing a Lar model (V,EV)
+function printLar(modelname, model)
+	V,EV = model
+	
+	function writefile(filename,data::Matrix)
+		out_file = open(filename, "w")
+		n,m = size(data)
+		# file records printed by column
+		for h=1:m
+			for k=1:n-1
+				print(out_file, data[k,h], ", ")
+			end
+			println(out_file, data[end,h])
+		end
+		close(out_file)
+	end
+	
+	# Cell file
+	filename = join([modelname,".V"])
+	writefile(filename,V)
+	# cell file
+	filename = join([modelname,".EV"])
+	writefile(filename,EV)
+end
+
+# Reading a Lar model (V,EV)
+function readLar(modelname)
+	filename = join([modelname,".V"])
+	W = readcsv(filename)
+	filename = join([modelname,".EV"])
+	EW = readcsv(filename,Int64)
+	W',EW'
+end
+
 
 # end # module Lar-core
