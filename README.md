@@ -15,13 +15,13 @@ Generate and visualize a grid of 3-cubes. Poke around with the mouse pressed
 to interact.
 ```julia
 v,cv = p.larCuboids((10,10,10));
-viewexploded(v,cv)
+viewexploded(v',(cv+1)')
 ```
 
 Generate and visualize a grid of 2-cubes. Poke as before
 ```julia
 v,fv = p.larCuboids((10,10));
-viewexploded(v,fv)
+viewexploded(v',(fv+1)')
 ```
 
 Define a visualize a 2-mesh of convex cells. Poke as before
@@ -39,10 +39,10 @@ jsonmodel = """
 	[14,15,28],[14,27,28,29,36],[16,29,34],[16,33,34],[17,30,33],
 	[18,19,31],[18,30,31],[19,20,31,32],[22,23,32,33],[23,24,34,35],
 	[23,33,34],[24,25,27,36],[24,35,36],[25,26,27],[29,34,35],
-	[29,35,36],[30,31,32,33]]}
+	[29,35,36],[30,31,32,33],[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]]}
 """;
-model = json2larmodel(jsonmodel)
-viewexploded(model.Verts',(model.Lar.FV))
+model = json2larmodel(jsonmodel);
+viewexploded(mod2.Verts,rebase(mod2.Lar.FV[1:end-1]))
 ```
 
 ```julia
@@ -50,7 +50,7 @@ lardict = JSON.parse(jsonmodel)
 V = lardict["V"]
 FV = lardict["FV"]
 v,fv = p.larFacets((V,FV),2)
-viewexploded(v,fv)
+viewexploded(v',(fv+1)')
 ```
 
 

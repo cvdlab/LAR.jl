@@ -210,10 +210,10 @@ function lar2hpc(V::Array{Float64,2}, EV::Array{Array{Int64,1},1})
 	lar2hpc(V,EV)
 end
 
-function lar2hpc(V::Array{Float64,2}, EV::Array{Array{Int64,1},1})
-	EV = map(Any, EV)
-	lar2hpc(V,EV)
-end
+# function lar2hpc(V::Array{Float64,2}, EV::Array{Array{Int64,1},1})
+# 	EV = map(Any, EV)
+# 	lar2hpc(V,EV)
+# end
 
 function lar2hpc(V::Array{Float64,2}, EV::Array{Int32,2})
 	a,b = PyObject(V'), PyObject(EV')
