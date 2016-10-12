@@ -101,13 +101,10 @@ EW = newcells.EV
 viewexploded(W,EW)
 
 
-lineArray = randomLines(30,.5);
+lineArray = randomLines(300,.3);
 V,EV = lines2lar(lineArray);
 viewexploded(V,EV)
 VV = vertices2vertices(V,EV)
-model = V,EV
-
 EW = biconnectedComponent(V,EV)
-view(V,EW)
 viewexploded(V,EW)
 

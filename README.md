@@ -42,14 +42,14 @@ jsonmodel = """
 	[29,35,36],[30,31,32,33],[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]]}
 """;
 model = json2larmodel(jsonmodel);
-viewexploded(mod2.Verts,rebase(mod2.Lar.FV[1:end-1]))
+viewexploded(model.Verts,rebase(model.Lar.FV[1:end-1]))
 ```
 
 ```julia
-lardict = JSON.parse(jsonmodel)
-V = lardict["V"]
-FV = lardict["FV"]
-v,fv = p.larFacets((V,FV),2)
+lardict = JSON.parse(jsonmodel);
+V = lardict["V"];
+FV = lardict["FV"];
+v,fv = p.larFacets((V,FV),2);
 viewexploded(v',(fv+1)')
 ```
 
