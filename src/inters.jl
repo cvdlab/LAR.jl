@@ -361,13 +361,29 @@ end
 
 # Produce an indexed view of Lar model (W,EW)
 function viewLarIndices(W,EW)
-	submodel = lar2hpc(W,hcat(EW...))
-	VV = PyObject(Any[Any[k] for k in  0:size(W,2)-1])
-	EZ = map(Array{Int32},EW-1)
+	function convertData(W,EW)
+		# Shifted vertices
+		Z = zeros(length(W)+size(W,1))
+		for k=1:length(W)
+			Z[k + size(W,1)] = W[k]
+		end
+		Z = reshape(Z,size(W,1),size(W,2)+1)
+		# shifted edges
+		EZ = Any[[1,1]]
+		for k=1:length(EW)
+			push!(EZ, EW[k])
+		end
+		Z,EZ
+	end
+	V,EV = convertData(W,EW)
+	submodel = lar2hpc(V,hcat(EV...))
+	VV = PyObject(Any[Any[k] for k in  0:size(V,2)-1])
+	EZ = map(Array{Int32},EV-1)
 	EV = PyObject(Any[PyObject(EZ[e])[:tolist]() for e=1:length(EZ) ])
-	V = PyObject(Any[PyObject(W[:,v])[:tolist]() for v=1:size(W,2) ])
+	V = PyObject(Any[PyObject(V[:,v])[:tolist]() for v=1:size(V,2) ])
 	scale = maximum(p.SIZE(Any[1,2])(submodel))/6
 	hpc = p.larModelNumbering(1,1,1)(V,PyObject([VV,EV]),submodel,scale)
 	p.VIEW(hpc)
 end
+
 
