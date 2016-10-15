@@ -360,7 +360,7 @@ function outputComp(stack,u,v)
 end
 
 # Produce an indexed view of Lar model (W,EW)
-function viewLarIndices(W,EW)
+function viewLarIndices(W,EW,unit=1.0)
 	function convertData(W,EW)
 		# Shifted vertices
 		Z = zeros(length(W)+size(W,1))
@@ -371,7 +371,7 @@ function viewLarIndices(W,EW)
 		# shifted edges
 		EZ = Any[[1,1]]
 		for k=1:length(EW)
-			push!(EZ, EW[k])
+			push!(EZ, EW[k]+1)
 		end
 		Z,EZ
 	end
@@ -381,7 +381,7 @@ function viewLarIndices(W,EW)
 	EZ = map(Array{Int32},EV-1)
 	EV = PyObject(Any[PyObject(EZ[e])[:tolist]() for e=1:length(EZ) ])
 	V = PyObject(Any[PyObject(V[:,v])[:tolist]() for v=1:size(V,2) ])
-	scale = maximum(p.SIZE(Any[1,2])(submodel))/6
+	scale = unit*maximum(p.SIZE(Any[1,2])(submodel))/6
 	hpc = p.larModelNumbering(1,1,1)(V,PyObject([VV,EV]),submodel,scale)
 	p.VIEW(hpc)
 end

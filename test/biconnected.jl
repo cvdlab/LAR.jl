@@ -13,9 +13,11 @@ lineArray = (V,EV);
 W,EW = lines2lar(lineArray);
 lar = Lar();
 lar.EV = [EW[:,k] for k=1:size(EW,2)];
-W,newcells,oldindex = larvalidate(W,lar);
+W,newcells,oldindex = larvalidate(W,lar,10^2);
 EW = newcells.EV;
 viewexploded(W,EW);
+viewLarIndices(W,EW,0.75)
+
 
 
 lineArray = randomLines(300,.3);
