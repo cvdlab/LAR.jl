@@ -1,4 +1,4 @@
-# input for cross-testing of test LAR files to a python environment
+# input for cross-testing of test LAR files with a Python environment
 from larlib import *
 import networkx as nx
 
