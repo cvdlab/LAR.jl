@@ -1,6 +1,7 @@
 # LAR.jl
 ### Geometric and topological modeling with chain complexes in Julia.
 
+**Pre-requisite**: first install [pyplasm](https://github.com/plasm-language/pyplasm/blob/master/README.rst) and [larlib](https://pypi.python.org/pypi/larlib/) for Python 2.7
 
 **Installation**: `julia> Pkg.clone("git://github.com/cvdlab/LAR.jl.git")`
 
