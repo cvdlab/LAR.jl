@@ -12,11 +12,11 @@ include("src/inters.jl")
 
 view(randomLines(1000,0.1)...)
 
-randomLineArray = randomLines(200,0.2)
-lines = lar2hpc(randomLineArray...)
-yellow = p.COLOR(p.YELLOW)(lines)
-boxes = containment2DBoxes(randomLineArray...)
-rects = [box2rect(box) for box in boxes]
-polylines = p.AA(polyline)(rects)
-cyan = p.COLOR(p.CYAN)(p.STRUCT(polylines))
+randomLineArray = randomLines(200,0.2);
+lines = lar2hpc(randomLineArray...);
+yellow = p.COLOR(p.YELLOW)(lines);
+boxes = containment2DBoxes(randomLineArray...);
+rects = [box2rect(box) for box in boxes];
+polylines = p.AA(polyline)(rects);
+cyan = p.COLOR(p.CYAN)(p.STRUCT(polylines));
 p.VIEW(p.STRUCT([yellow,cyan]))

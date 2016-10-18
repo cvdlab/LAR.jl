@@ -1,7 +1,7 @@
 # LAR.jl
 ### Geometric and topological modeling with chain complexes in Julia.
 
-**Pre-requisite**: first install [pyplasm](https://github.com/plasm-language/pyplasm/blob/master/README.rst) and [larlib](https://pypi.python.org/pypi/larlib/) for Python 2.7
+**Precondition**: install [pyplasm](https://github.com/plasm-language/pyplasm/blob/master/README.rst) and [larlib](https://pypi.python.org/pypi/larlib/) for Python 2.7
 
 **Installation**: `julia> Pkg.clone("git://github.com/cvdlab/LAR.jl.git")`
 
@@ -27,7 +27,7 @@ viewexploded(v',(fv+1)')
 
 Define a visualize a 2-mesh of convex cells. Poke as before
 ```julia
-jsonmodel = """
+jsonModel = """
 	{"V" : [[5.0,0.0],[7.0,1.0],[9.0,0.0],[13.0,2.0],[15.0,4.0],[17.0,
 	8.0],[14.0,9.0],[13.0,10.0],[11.0,11.0],[9.0,10.0],[5.0,9.0],[7.0,
 	9.0],[3.0,8.0],[0.0,6.0],[2.0,3.0],[2.0,1.0],[8.0,3.0],[10.0,2.0],
@@ -43,14 +43,14 @@ jsonmodel = """
 	[23,33,34],[24,25,27,36],[24,35,36],[25,26,27],[29,34,35],
 	[29,35,36],[30,31,32,33],[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]]}
 """;
-model = json2larmodel(jsonmodel);
+model = json2larmodel(jsonModel);
 viewexploded(model.Verts,rebase(model.Lar.FV[1:end-1]))
 ```
 
 ```julia
-lardict = JSON.parse(jsonmodel);
-V = lardict["V"];
-FV = lardict["FV"];
+larDict = JSON.parse(jsonModel);
+V = larDict["V"];
+FV = larDict["FV"];
 v,ev = p.larFacets((V,FV),2);
 viewexploded(v',(ev+1)')
 ev = Any[ev[k,:]+1 for k=1:size(ev,1)]
