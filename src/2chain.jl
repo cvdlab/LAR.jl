@@ -9,7 +9,7 @@ function nextEdge(edges::Array{Int64,1})
 end
 
 # Circular ordering of edges around vertices
-function edgeSlopeOrdering(VE,V)
+function edgeSlopeOrdering(VE,V,EV)
 	VE_sorted = Array{Array{Int64,1},1}()
 	forward = Tuple{Array{Int64,1},Array{Int64,1}}[]
 	for (v,ve) in enumerate(VE)
@@ -49,7 +49,7 @@ function cycleBasis(V,EV)
 		col = [rows[h] for h in nzrange(S,k)]
 		push!(VE, col)
 	end
-	forward = edgeSlopeOrdering(VE,V)
+	forward = edgeSlopeOrdering(VE,V,EV)
 	for (v,(edges,nexts)) in enumerate(forward)
 		for (h,e) in enumerate(edges)
 			S[edges[h],v] = nexts[h]
