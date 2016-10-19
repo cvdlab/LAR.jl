@@ -1,5 +1,5 @@
 
-function nextEdge(edges::Array{Int64,1})
+function nextEdges(edges::Array{Int64,1})
 	theNexts = Array{Int64,1}()
 	n = length(edges)
 	for k in 1:n
@@ -25,7 +25,7 @@ function edgeSlopeOrdering(VE,V,EV)
 		pairs = sort(collect(zip(ve_angle,ve)))
 		sortedEdges = [pair[2] for pair in pairs]
 		push!(VE_sorted, sortedEdges)
-		theNexts = nextEdge(sortedEdges)
+		theNexts = nextEdges(sortedEdges)
 		push!(forward, (sortedEdges,theNexts))
 		
 	end
@@ -59,4 +59,50 @@ function cycleBasis(V,EV)
 end
 
 S = cycleBasis(W,EW)
+
+# return the first index with positive value in Val. If none return zero.
+function getFirstPositive(Val)
+	for k=1:length(Val)
+		if Val[k] > 0  return k end
+	end
+	return 0
+end
+
+
+# Extract 1-cycles from the sparse matrix EV evaluated on next edges
+function edgeCycles(S,V,EV)
+	cycles = []
+	I,J,Val = findnz(S)
+	k = getFirstPositive(Val)
+	while k != 0
+		v = J[k]
+		firstEdge = I[k]
+		cycle = [firstEdge]
+		next_edge = abs(S[abs(firstEdge),v])
+		if S[abs(firstEdge),v] > 0
+			S[abs(firstEdge),v] = -S[abs(firstEdge),v]  # sign as visited
+		end
+		while next_edge != firstEdge
+			push!(cycle, next_edge)
+			if S[abs(next_edge),v] > 0
+				S[abs(next_edge),v] = -S[abs(next_edge),v]
+			end
+			nextv = pop!(setdiff(Set(EV[abs(next_edge)]), Set(v)))
+			next_edge = S[abs(next_edge),nextv]
+			v = nextv
+		end
+		push!(cycles,cycle)
+		I,J,Val = findnz(S)
+		k = getFirstPositive(Val)
+	end
+	cycles
+end
+
+
+edgeCycles(S,W,EW)
+
+
+
+
+
 
