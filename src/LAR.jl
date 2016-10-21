@@ -247,13 +247,6 @@ function view(V::Array{Any,2}, EV::Array{Any,1})
 	p.VIEW(p.MKPOL([a,b,1]))
 end
 
-# visualize an HPC value from a Julia pair (Verts,Cells)
-function lar2hpc(V::Array{Float64,2}, EV::Array{Any,1})
-	a,b = PyObject(V'), PyObject(EV)
-	verts = PyObject(a[:tolist]())
-	cells = b
-	p.MKPOL([verts,cells,1])
-end
 
 # visualize an HPC value from a Julia pair (Verts,Cells)
 function view(V::Array{Float64,2}, EV::Array{Any,1})
@@ -361,16 +354,10 @@ end
 function translate( t, V )
 	broadcast(+,t,V)
 end
-function translate( V, t )
-	broadcast(+,t,V)
-end
 
 # scale the columns of `V` matrix by product times `s` vector
 function scale( s, V )
 	broadcast(*,s,V)
-end
-function scale( V, s )
-	broadcast(*,V,s)
 end
 
 # rotate the columns of `V` matrix by properly using the `args` parameters
