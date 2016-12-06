@@ -36,31 +36,40 @@ function edgeSlopeOrdering(VE,V,EV)
 	forwardBackward
 end
 
+function theSign(EV,edge,v)
+	w = pop!(setdiff(Set(EV[edge]), Set(v)))
+	v < w ? 1 : -1
+end
+
 # Return the sparse matrix codifying (next,prev) edges for each pair [v,e]
 function cycleBasis(V,EV)
 	I = Int64[]; 
 	J = Int64[]; 
-	Val = Tuple{Int64,Int64}[] 
+	Vnext, Vprev = Int64[], Int64[] 
 	for (e,(i,j)) in enumerate(EV)
 		push!(I,i); push!(I,j); 
 		push!(J,e); push!(J,e); 
-		push!(Val,(0,0)); push!(Val,(0,0)); 
+		push!(Vnext,0); push!(Vnext,0); 
+		push!(Vprev,0); push!(Vprev,0); 
 	end
-	S = sparse(J,I,Val)
-	rows = rowvals(S) 
+	Snext = sparse(J,I,Vnext)
+	Sprev = sparse(J,I,Vprev)
+	rows = rowvals(Snext) 
 	VE = Array{Array{Int64,1},1}()
-	for k=1:size(S,2)
+	for k=1:size(Snext,2)
 		# extract column
-		col = [rows[h] for h in nzrange(S,k)]
+		col = [rows[h] for h in nzrange(Snext,k)]
 		push!(VE, col)
 	end
 	forwardBackward = edgeSlopeOrdering(VE,V,EV)
 	for (v,(edges,nexts,prevs)) in enumerate(forwardBackward)
 		for (h,e) in enumerate(edges)
-			S[edges[h],v] = (nexts[h],prevs[h])
+			esign = theSign(EV,edges[h],v)
+			Snext[edges[h],v] = nexts[h]*esign
+			Sprev[edges[h],v] = prevs[h]*esign
 		end
 	end
-	return S
+	return Snext,Sprev
 end
 
 # Return the sparse matrix of the signed ∂–1 operator
@@ -92,5 +101,66 @@ W,newcells,oldindex = larvalidate(W,lar,10^2);
 EW = newcells.EV;
 viewLarIndices(W,EW,0.75)
 
-S = cycleBasis(W,EW)
+
+using Iterators
+
+function colProd(op,chain1)
+	chain0 = op * chain1
+	chain0_cells = []
+	I,J,V = findnz(chain0)
+	@itr for (i,v) in zip(I,V)
+    	push!( chain0_cells, i*v )
+    end		
+	chain0_cells
+end
+
+function rowProd(chain0,op)
+	chain1 = chain0' * op
+	chain1_cells = []
+	I,J,V = findnz(chain1)
+	@itr for (j,v) in zip(J,V)
+    	push!( chain1_cells, j*v )
+    end		
+	chain1_cells
+end
+
+function extract_2cell(seed, Snext,Sprev, useCounts, B_1, EW)
+	chain1 = map(Int64, spzeros(size(B_1,2),1));
+	if useCounts[seed] == 0
+		chain1[seed,1] = +1
+	elseif useCounts[seed] == 1
+		chain1[seed,1] = -1
+	end
+	chain1_cells = [chain1[seed,1] * seed]
+	chain0_cells = colProd(B_1, chain1)
+	useCounts[seed] += 1
+	
+	while chain0_cells != []
+		chain1_cells = rowProd(chain0, B_1)
+	
+		next1_cells = [ S[abs(cell1),abs(cell0)] for cell0 in chain0_cells, 
+			cell1 in chain1_cells if Set(abs(cell0)) < Set(EW[cell1])]
+	
+		direction_test = all([ useCounts[cell]<2 for cell in next1_cells ])
+		if direction_test==true
+			for cell in Set(next1_cells)
+				useCounts[cell] += 1
+				chain1[cell,1] = 1
+				push!(chain1_cells, cell)
+			end
+		else 
+			return []
+		end
+		chain0 = B_1 * chain1
+		cells0,val = findnz(chain0[:,1])
+		chain0_cells = [cells0[k] for (k,v) in enumerate(val) if abs(val[k])==1]
+	end
+	chain1_cells
+end
+			
+Snext,Sprev = cycleBasis(W,EW)
 B_1 = boundary_1(EW)
+S = Snext
+useCounts = [0 for k in 1:length(EW)]
+extract_2cell(1, S, useCounts, B_1, EW)
+			

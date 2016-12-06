@@ -3,8 +3,8 @@
 
 
 # Rounding of vectors to a given number of significant digits
-vcode(v::Verts,prec=10^5) = zeros!(map(round, v*prec)/prec)
-vcode(v::Vector,prec=10^5) = zeros!(map(round, v*prec)/prec)
+vcode(v::Verts,prec=10^8) = zeros!(map(round, v*prec)/prec)
+vcode(v::Vector,prec=10^8) = zeros!(map(round, v*prec)/prec)
 
 # random 2D point with given number of digits.
 # A single 2D random point, codified in floating point format, and with a fixed (quite small)
@@ -231,50 +231,36 @@ function lineIntersection(lineArray)
     lineFrags = Dict(zip(frags,params))
 end
 
+#    tree = cKDTree(pts)
+#    a = cKDTree.sparse_distance_matrix(tree,tree,radius)
+
 # Transform a lineArray (Array of pairs of 2D points) into a 1-complex (V,EV)
 function lines2lar(lineArray,prec=10^4)
 	lineFrags = lineIntersection(lineArray)
-	pointStorage = Dict{Array{Float64,1},Int64}()
+	
+	verts = zeros(2,1)
+	index = 0
 	EV = Array{Any,1}()
-	vert = 1
-	for line in lineFrags
-		# storage of lar vertices
-		v1, v2 = vcode(line[1][:,1],prec), vcode(line[1][:,2], prec)  
-		params = line[2]
-		if get(pointStorage,v1,0)==0
-			pointStorage[v1] = vert; vert += 1 
+	for k in 1:length(lineFrags)
+		ps = collect(keys(lineFrags))[k]
+		alphas = vcat([[0.],collect(values(lineFrags))[k],[1.]]...)
+		pts = [ (ps[:,1]*(1.-alphas[i])+ps[:,2]*alphas[i]) for i=1:length(alphas) ]
+		verts = hcat(verts,hcat(pts...))
+		for h=(index+1):(index+length(pts)-1)
+			push!(EV, [h,h+1])
 		end
-		if get(pointStorage,v2,0)==0
-			pointStorage[v2] = vert; vert += 1 
-		end
-		# storage of lar edges
-		if params != Float64[]
-			index = [pointStorage[v1]]
-			for alpha in params
-				v = vcode(v1+alpha*(v2-v1),prec)
-				if get(pointStorage,v,0)==0
-					pointStorage[v] = vert; vert += 1 
-				end
-				push!(index, pointStorage[v])
-			end
-			push!(index, pointStorage[v2])
-			# storage of fragmented lines
-			for k=1:length(index)-1
-				push!(EV, [index[k],index[k+1]])
-			end
-		else
-			# storage of old lines
-			push!(EV, [pointStorage[v1], pointStorage[v2]])
-		end
+		index += length(pts)
 	end
-	ks,vs = keys(pointStorage),values(pointStorage)
-	invPointStorage = Dict(zip(vs,ks))
-	sorted = sort([(x,y) for (x,y) in collect(invPointStorage)])
-	vertices = [p for (i,p) in sorted]
-	V,EV = hcat(vertices...), hcat(EV...)
+	V,EV = verts[:,2:end],hcat([EV[k] for k=1:length(EV)]...)
+
+	W,close,clusters,vmap = p.pruneVertices(V')	
+	Z = hcat(W...)
+	vmap = vmap + 1
+	EW = [[vmap[EV[1,k]],vmap[EV[2,k]]] for k in 1:size(EV,2)]
+	EZ = hcat(EW...)
+	viewexploded(Z,EZ)
+	V,EV = biconnectedComponents(Z,EZ);
 end
-
-
 
 
 

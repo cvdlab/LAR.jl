@@ -27,3 +27,7 @@ VV = vertices2vertices(V,EV);
 W,EW = biconnectedComponents(V,EV);
 viewexploded(W,EW)
 
+
+
+
+
