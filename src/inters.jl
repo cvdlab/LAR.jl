@@ -252,7 +252,11 @@ function lines2lar(lineArray,prec=10^4)
 	V,EV = verts[:,2:end],hcat([EV[k] for k=1:length(EV)]...)
 
 	W,close,clusters,vmap = p.pruneVertices(V')	
-	Z = hcat(W...)
+	if typeof(W) == Array{Any,1} 
+		Z = Array{Float64,2}(hcat(W...))
+	else 
+		Z = Array{Float64,2}(W)
+	end
 	vmap = vmap + 1
 	EW = [[vmap[EV[1,k]],vmap[EV[2,k]]] for k in 1:size(EV,2)]
 	EZ = hcat(EW...)
