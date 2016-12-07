@@ -261,6 +261,7 @@ function lines2lar(lineArray,prec=10^4)
 	EW = [[vmap[EV[1,k]],vmap[EV[2,k]]] for k in 1:size(EV,2)]
 	EZ = hcat(EW...)
 	V,EV = biconnectedComponents(Z,EZ)
+	if size(V,2)==2 V=V' end
 	V,EV
 end
 

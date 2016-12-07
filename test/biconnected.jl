@@ -14,7 +14,7 @@ datafile = readcsv("test/svg/test1.lines");
 V = reshape(datafile',(size(datafile',1)÷2,size(datafile',2)*2));
 len = length(datafile);
 EV = collect(reshape(1:(len÷2), 2,(len÷4)));
-view(V,EV);
+#view(V,EV);
 lineArray = (V,EV)
 W,EW = lines2lar(lineArray)
 viewexploded(W,EW);
@@ -23,11 +23,9 @@ viewLarIndices(W,cols2any(EW),0.75)
 
 
 lineArray = randomLines(300,.3)
-W,EW = lines2lar(lineArray)
-viewexploded(W,EW)
-V,EV = biconnectedComponents(W,EW);
-viewexploded(V,EV)
-viewLarIndices(V,cols2any(EV),0.075)
+Z,EZ = lines2lar(lineArray)
+viewexploded(Z,EZ)
+viewLarIndices(Z,cols2any(EZ),0.075)
 
 
 
