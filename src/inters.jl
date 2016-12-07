@@ -231,8 +231,6 @@ function lineIntersection(lineArray)
     lineFrags = Dict(zip(frags,params))
 end
 
-#    tree = cKDTree(pts)
-#    a = cKDTree.sparse_distance_matrix(tree,tree,radius)
 
 # Transform a lineArray (Array of pairs of 2D points) into a 1-complex (V,EV)
 function lines2lar(lineArray,prec=10^4)
@@ -259,7 +257,8 @@ function lines2lar(lineArray,prec=10^4)
 	EW = [[vmap[EV[1,k]],vmap[EV[2,k]]] for k in 1:size(EV,2)]
 	EZ = hcat(EW...)
 	viewexploded(Z,EZ)
-	V,EV = biconnectedComponents(Z,EZ);
+	V,EV = biconnectedComponents(Z,EZ)
+	V,EV
 end
 
 
