@@ -11,21 +11,39 @@ EV = collect(reshape(1:(len÷2), 2,(len÷4)));
 view(V,EV);
 lineArray = (V,EV);
 W,EW = lines2lar(lineArray);
-lar = Lar();
-lar.EV = [EW[:,k] for k=1:size(EW,2)];
-W,newcells,oldindex = larvalidate(W,lar,10^2);
-EW = newcells.EV;
 viewexploded(W,EW);
 viewLarIndices(W,EW,0.75)
 
+function cols2any(EW)
+	EZ = Any[]
+	[push!(EZ, EW[:,k]) for k=1:size(EW,2)]
+	EZ
+end
 
 
-lineArray = randomLines(300,.3);
-V,EV = lines2lar(lineArray);
+lineArray = randomLines(300,.3)
+		
+W,EW = lines2lar(lineArray)
+viewexploded(W,EW)
+V,EV = biconnectedComponents(W,EW);
+viewexploded(V,EV)
+viewLarIndices(V,cols2any(EV),0.075)
+
+
+
+
 viewexploded(V,EV);
 VV = vertices2vertices(V,EV);
-W,EW = biconnectedComponents(V,EV);
-viewexploded(W,EW)
+V,EW = biconnectedComponents(V,EV);
+viewexploded(V,EW)
+viewLarIndices(V,cols2any(EW),0.075)
+
+
+
+
+
+
+
 
 
 

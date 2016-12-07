@@ -256,7 +256,6 @@ function lines2lar(lineArray,prec=10^4)
 	vmap = vmap + 1
 	EW = [[vmap[EV[1,k]],vmap[EV[2,k]]] for k in 1:size(EV,2)]
 	EZ = hcat(EW...)
-	viewexploded(Z,EZ)
 	V,EV = biconnectedComponents(Z,EZ)
 	V,EV
 end
