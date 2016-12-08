@@ -4,7 +4,7 @@ An implementation of the Hopcroft-Tarjan algorithm~\cite{Hopcroft:1973:AEA:36224
 using LAR
 include("src/inters.jl")
 
-datafile = readcsv("test/svg/test1.lines");
+datafile = readcsv("test/svg/test2.lines");
 V = reshape(datafile',(size(datafile',1)÷2,size(datafile',2)*2))
 len = length(datafile)
 EV = collect(reshape(1:(len÷2), 2,(len÷4)))
