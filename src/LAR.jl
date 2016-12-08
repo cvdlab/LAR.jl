@@ -520,9 +520,15 @@ function readLar(modelname)
 	W',EW'
 end
 
+function cols2any(EW)
+	EZ = Any[]
+	[push!(EZ, EW[:,k]) for k=1:size(EW,2)]
+	EZ
+end
 
 # Produce an indexed view of Lar model (W,EW)
 function viewLarIndices(W,EW,unit=1.0)
+	EW = cols2any(EW)
 	function convertData(W,EW)
 		# Shifted vertices
 		Z = zeros(length(W)+size(W,1))
