@@ -3,6 +3,7 @@ An implementation of the Hopcroft-Tarjan algorithm~\cite{Hopcroft:1973:AEA:36224
 
 using LAR
 include("src/inters.jl")
+include("test/boundary.jl")
 
 datafile = readcsv("test/svg/test4.lines");
 V = reshape(datafile',(size(datafile',1)÷2,size(datafile',2)*2))
@@ -14,7 +15,7 @@ W,EW = lines2lar(lineArray)
 viewexploded(W,EW)
 VV = vertices2vertices(W,EW)
 viewLarIndices(W,EW,0.75)
-W,EW
+out,pairs = boundary(W,EW)
 
 
 lineArray = randomLines(200,.4)
@@ -23,4 +24,5 @@ V,EV = lines2lar(lineArray)
 view(V,EV)
 viewexploded(V,EV)
 viewLarIndices(V,EV,0.075)
+out,pairs = boundary(V,EV)
 

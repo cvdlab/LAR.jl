@@ -48,7 +48,6 @@ function nextPrev(edges::Array{Int64,1})
 	theNexts,thePrevs
 end
 
-	
 function rowColIncidence(BND_1)
 	vs,es = findn(BND_1)
 	VE = [Int64[] for k=1:size(V,2)]
@@ -58,8 +57,7 @@ function rowColIncidence(BND_1)
 	return VE
 end
 
-
-function edgeSlopeOrdering(VE,V)
+function edgeSlopeOrdering(VE,V,EV)
  	VE_sorted = Array{Array{Int64,1},1}()
  	forwardBackward = Tuple{Array{Int64,1},Dict{Int64,Int64},Dict{Int64,Int64}}[]
  	for (v,ve) in enumerate(VE)
@@ -84,22 +82,9 @@ function edgeSlopeOrdering(VE,V)
 end
 
 
-
-BND_1 = boundary_1(EW)
-full(BND_1)
-m,n = size(BND_1)
-
-VE = rowColIncidence(BND_1)
-forwardBackward = edgeSlopeOrdering(VE,V)
-
-c_1 = sparsevec([1],[1],size(BND_1,2))
-c_0 = BND_1 * c_1
-c_1 = (c_0' * BND_1)'
-
-
-function checkOrient(Cell_0,pivot,next)
+function checkOrient(BND_1,m,Cell_0,pivot,next)
 	sign = Cell_0[1,pivot]
-	C_1 = sparse([next],[1],[1],n,1)
+	C_1 = sparse([next],[1],[1],m,1)
 	C_0 = (BND_1 * C_1)'
 	chain_0 = findnz(C_0)
 	_,cells_0,vals_0 = chain_0
@@ -111,39 +96,31 @@ function checkOrient(Cell_0,pivot,next)
 	end
 end
 
-function cellTracking(thecell,thesign)
+function cellTracking(BND_1,m,n,forwardBackward, V,EV, thecell,thesign)
 	chain = [thecell]
 	signs = [thesign]
 	signedChain = [thecell*thesign]
-	m = size(BND_1,1)
-	n = size(BND_1,2)
 	C_1 = sparse(chain,[1],signs,n,1)
-	
 	C_0 = (BND_1 * C_1)'
 	chain_0 = findnz(C_0)
 	_,cells_0,vals_0 = chain_0
-	
 	while cells_0 != []
 		for k in 1:length(cells_0)
 			pivot = cells_0[k]
 			Cell_0 = sparse([1],[pivot],[vals_0[k]],1,m)
-		
 			C_1 = (Cell_0 * BND_1)
 			chain_1 = findnz(C_1)
 			_,cells_1,vals_1 = chain_1
 			hinge = pop!(intersect(Set(cells_1), Set(chain)))
-		
 			if Cell_0[1,pivot] == -1
 				next = forwardBackward[pivot][3][hinge]
 			else
 				next = forwardBackward[pivot][2][hinge] end
-			
-			thesign = checkOrient(Cell_0,pivot,next)
+			thesign = checkOrient(BND_1,n,Cell_0,pivot,next)
 			signedCell = Int64(thesign*next)
 			if !(signedCell in signedChain)
 				signedChain = push!(signedChain,signedCell) end
 		end
-	
 		chain = [abs(cell) for cell in signedChain]
 		signs = [sign(cell) for cell in signedChain]
 		C_1 = sparse(chain,[1 for cell in chain],signs,n,1)
@@ -155,39 +132,41 @@ function cellTracking(thecell,thesign)
 	return signedChain
 end
 
-cellTracking(7,1)
 
+function boundary(V,EV::Array{Int64,2})
+	BND_1 = boundary_1(EV)
+	m = size(BND_1,1)
+	n = size(BND_1,2)
+	VE = rowColIncidence(BND_1)
+	forwardBackward = edgeSlopeOrdering(VE,V,EV)
 
-function boundary(EV::Array{Int64,2})
 	out = Array{Int64,1}[]
 	store1 = [100 for k=1:size(EV,2)]
 	store2 = [100 for k=1:size(EV,2)]
 	cell = 1
 	thesign = 1
 	while cell != 0
-		signedChain = cellTracking(cell,thesign)
+		signedChain = cellTracking(BND_1,m,n,forwardBackward,V,EV, cell,thesign)
 		push!(out,signedChain)
-		println("signedChain = ",signedChain)
 		# store the cells in signedChain
-		for c in signedChain
-			println("c = ",c)
-		
+		for c in signedChain		
 			if store1[abs(c)] == 100
 				store1[abs(c)] = sign(c)
 			elseif store2[abs(c)] == 100
 				store2[abs(c)] = sign(c)
 			end
-			
 		end
 		# get the next seed
 		pairs = collect(zip(store1,store2))
 		cell = findfirst(c->99<=sum(c)<=101, pairs)
-		println("cell = ",cell)
 		if cell != 0
 			thesign = -(sum(pairs[cell])-100)
+		else
+			cell = findfirst(c->sum(c)==200, pairs)
+			if cell==0 break end
 		end
 	end
-	out
+	pairs = collect(zip(store1,store2))
+	out,pairs
 end
 	
-facetStore = boundary(EV)
