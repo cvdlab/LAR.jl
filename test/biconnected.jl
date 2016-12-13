@@ -24,19 +24,3 @@ view(V,EV)
 viewexploded(V,EV)
 viewLarIndices(V,EV,0.075)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
