@@ -36,7 +36,8 @@ function cycleBasis(V,EV)
 	I = Int64[]; 
 	J = Int64[]; 
 	Val = Int64[]; 
-	for (e,(i,j)) in enumerate(EV)
+	for e in 1:size(EV,2)
+		i,j = EV[:,e]
 		push!(I,i); push!(I,j); 
 		push!(J,e); push!(J,e); 
 		push!(Val,1); push!(Val,1); 

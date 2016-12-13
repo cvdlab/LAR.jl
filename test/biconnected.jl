@@ -4,7 +4,7 @@ An implementation of the Hopcroft-Tarjan algorithm~\cite{Hopcroft:1973:AEA:36224
 using LAR
 include("src/inters.jl")
 
-datafile = readcsv("test/svg/test2.lines");
+datafile = readcsv("test/svg/test4.lines");
 V = reshape(datafile',(size(datafile',1)÷2,size(datafile',2)*2))
 len = length(datafile)
 EV = collect(reshape(1:(len÷2), 2,(len÷4)))
@@ -14,9 +14,10 @@ W,EW = lines2lar(lineArray)
 viewexploded(W,EW)
 VV = vertices2vertices(W,EW)
 viewLarIndices(W,EW,0.75)
+W,EW
 
 
-lineArray = randomLines(300,.3)
+lineArray = randomLines(200,.4)
 view(lineArray...)
 V,EV = lines2lar(lineArray)
 view(V,EV)

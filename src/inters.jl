@@ -231,6 +231,21 @@ function lineIntersection(lineArray)
     lineFrags = Dict(zip(frags,params))
 end
 
+function larModelCheck(V,EV)
+	vertexIndex,k = Dict{Int64,Int64}(),0
+	W = sort(collect(Set(EV)))
+	for (k,v) in enumerate(W)
+		vertexIndex[v] = k
+	end
+	EW = deepcopy(EV)
+	for k=1:size(EV,2)
+		EW[1,k] = vertexIndex[EV[1,k]]
+		EW[2,k] = vertexIndex[EV[2,k]]
+	end
+	vkeys = p.TRANS(sort(collect(vertexIndex)))'[:,1]
+	V = hcat([V[:,k] for k in vkeys]...)
+	V,EW
+end
 
 # Transform a lineArray (Array of pairs of 2D points) into a 1-complex (V,EV)
 function lines2lar(lineArray,prec=10^4)
@@ -262,7 +277,7 @@ function lines2lar(lineArray,prec=10^4)
 	EZ = hcat(EW...)
 	V,EV = biconnectedComponents(Z,EZ)
 	if size(V,2)==2 V=V' end
-	V,EV
+	V,EV = larModelCheck(V,EV)
 end
 
 
