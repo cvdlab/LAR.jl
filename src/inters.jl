@@ -244,7 +244,9 @@ function larModelCheck(V,EV)
 	end
 	vkeys = p.TRANS(sort(collect(vertexIndex)))'[:,1]
 	V = hcat([V[:,k] for k in vkeys]...)
-	V,EW
+	EV = hcat([sort(EW[:,k]) for k=1:size(EW,2)]...)
+	EV = sortcols(EV, by=x->x[1])
+	V,EV
 end
 
 # Transform a lineArray (Array of pairs of 2D points) into a 1-complex (V,EV)
