@@ -167,6 +167,18 @@ function boundary(V,EV::Array{Int64,2})
 		end
 	end
 	pairs = collect(zip(store1,store2))
-	out,pairs
+	out
 end
-	
+
+
+function boundaryOp(EV::Array{Int64,2}, chains::Array{Array{Int64,1},1})
+	I,J,V = Int64[],Int64[],Int64[]
+	for (k,chain) in enumerate(chains)
+		append!(I, abs(chain))
+		append!(J, [k for row in chain])
+		append!(V, sign(chain))
+	end
+	return sparse(I,J,V,size(EV,2),length(chains))
+end
+
+

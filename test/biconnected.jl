@@ -5,7 +5,7 @@ using LAR
 include("src/inters.jl")
 include("test/boundary.jl")
 
-datafile = readcsv("test/svg/test4.lines");
+datafile = readcsv("test/svg/test2.lines");
 V = reshape(datafile',(size(datafile',1)÷2,size(datafile',2)*2))
 len = length(datafile)
 EV = collect(reshape(1:(len÷2), 2,(len÷4)))
@@ -15,14 +15,16 @@ W,EW = lines2lar(lineArray)
 viewexploded(W,EW)
 VV = vertices2vertices(W,EW)
 viewLarIndices(W,EW,0.75)
-out,pairs = boundary(W,EW)
+chains = boundary(W,EW)
+operator = boundaryOp(EW,chains)
+println(full(operator))
 
+lineArray = randomLines(600,.3)
 
-lineArray = randomLines(200,.4)
 view(lineArray...)
 V,EV = lines2lar(lineArray)
 view(V,EV)
 viewexploded(V,EV)
 viewLarIndices(V,EV,0.075)
-out,pairs = boundary(V,EV)
+out2,pairs2 = boundary(V,EV)
 

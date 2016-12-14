@@ -231,6 +231,15 @@ function lineIntersection(lineArray)
     lineFrags = Dict(zip(frags,params))
 end
 
+function check4DoubleEdges(EV)
+	for k=1:(size(EV,2)-1)
+		if EV[:,k]==EV[:,k+1]
+			
+		end
+	end
+end
+
+
 function larModelCheck(V,EV)
 	vertexIndex,k = Dict{Int64,Int64}(),0
 	W = sort(collect(Set(EV)))
@@ -245,7 +254,8 @@ function larModelCheck(V,EV)
 	vkeys = p.TRANS(sort(collect(vertexIndex)))'[:,1]
 	V = hcat([V[:,k] for k in vkeys]...)
 	EV = hcat([sort(EW[:,k]) for k=1:size(EW,2)]...)
-	EV = sortcols(EV, by=x->x[1])
+	EV = sortcols(EV, by=x->(x[1],x[2]))
+	#EV = check4DoubleEdges(EV)
 	V,EV
 end
 
