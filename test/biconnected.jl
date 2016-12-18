@@ -5,7 +5,8 @@ using LAR
 include("src/inters.jl")
 include("test/boundary.jl")
 
-datafile = readcsv("test/svg/test2.lines");
+#datafile = readcsv("test/svg/test2.lines");
+datafile = readcsv("test/svg/provaWall.lines");
 V = reshape(datafile',(size(datafile',1)÷2,size(datafile',2)*2))
 len = length(datafile)
 EV = collect(reshape(1:(len÷2), 2,(len÷4)))
@@ -18,6 +19,9 @@ viewLarIndices(W,EW,0.75)
 chains = boundary(W,EW)
 operator = boundaryOp(EW,chains)
 println(full(operator))
+FW = [sort(collect(Set(vcat([EW[:,abs(e)] for e in face]...)))) for face in chains]
+viewLarIndices(W,EW,FW,0.65)
+
 
 lineArray = randomLines(600,.3)
 

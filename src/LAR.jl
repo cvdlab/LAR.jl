@@ -554,5 +554,34 @@ function viewLarIndices(W,EW,unit=1.0)
 	p.VIEW(hpc)
 end
 
+# Produce an indexed view of Lar model (W,EW,FW)
+function viewLarIndices(W,EW,FW,unit=1.0)
+	EW = cols2any(EW)
+	function convertData(W,EW)
+		# Shifted vertices
+		Z = zeros(length(W)+size(W,1))
+		for k=1:length(W)
+			Z[k + size(W,1)] = W[k]
+		end
+		Z = reshape(Z,size(W,1),size(W,2)+1)
+		# shifted edges
+		EZ = Any[[1,1]]
+		for k=1:length(EW)
+			push!(EZ, EW[k]+1)
+		end
+		Z,EZ
+	end
+	V,EV = convertData(W,EW)
+	submodel = lar2hpc(V,hcat(EV...))
+	VV = PyObject(Any[Any[k] for k in  0:size(V,2)-1])
+	EZ = map(Array{Int32},EV-1)
+	EV = PyObject(Any[PyObject(EZ[e])[:tolist]() for e=1:length(EZ) ])
+	FV = PyObject(Any[PyObject(FW[f])[:tolist]() for f=1:length(FW) ])
+	V = PyObject(Any[PyObject(V[:,v])[:tolist]() for v=1:size(V,2) ])
+	Scale = unit*maximum(p.SIZE(Any[1,2])(submodel))/6
+	hpc = p.larModelNumbering(1,1,1)(V,PyObject([VV,EV,FV]),submodel,Scale)
+	p.VIEW(hpc)
+end
+
 
 # end # module Lar-core
