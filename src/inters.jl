@@ -10,8 +10,7 @@ vcode(v::Vector,prec=10^8) = zeros!(map(round, v*prec)/prec)
 # A single 2D random point, codified in floating point format, and with a fixed (quite small)
 # number of digits, is returned by the \texttt{rand_point2d()} function, with no input
 # parameters.
-# rand_point2d(prec=10^5) = vcode(rand(2,1))
-rand_point2d(prec=10^5) = rand(2,1)
+rand_point2d(prec=10^5) = vcode(rand(2,1))
     
 # Generation of a random line segment.
 # A single random segment, scaled about its centroid by the \texttt{scaling} parameter, is
@@ -23,8 +22,7 @@ function rand_edge(scaling=1)
     pos = rand_point2d()
     v1 = (v1-c)*scaling + pos
     v2 = (v2-c)*scaling + pos
-    #(vcode(v1), vcode(v2))
-    v1,v2
+    (vcode(v1), vcode(v2))
 end
 
 # Generation of random lines
@@ -49,8 +47,7 @@ function containment2DBoxes(V,EV)
 		(v1,v2) = EV[:,k]
 		(x1,y1),(x2,y2) = V[:,v1],V[:,v2]
 		box = [min(x1,x2),min(y1,y2),max(x1,x2),max(y1,y2)]
-		#boxes = push!(boxes,vcode(box))
-		boxes = push!(boxes,box)
+		boxes = push!(boxes,vcode(box))
 	end
 	boxes
 end
