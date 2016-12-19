@@ -147,6 +147,27 @@ function splitting(bucket,below,above, finalBuckets,splittingStack)
 end
 
 
+function lar2boxes(V,CV)
+	boxes = zeros(Float64,(4,length(CV)))
+	for (k,cell) in enumerate(CV)
+		println("\n",(k,cell))
+		verts = hcat([V[:,v] for v in cell]...)
+		println("\n")
+		pmin,pmax = Float64[],Float64[],Float64[]
+		for h=1:size(verts,1)
+			coords = verts[h,:]
+			println(coords)
+			push!(pmin,minimum(coords))
+			push!(pmax,maximum(coords))
+		end
+		box = vcat(pmin,pmax)
+		println(box)
+		boxes[:,k] = box
+	end
+	return boxes
+end
+
+
 # Iterative splitting of a 3D box array
 function boxBuckets3d(boxes)
     bucket = Set(1:length(boxes))
