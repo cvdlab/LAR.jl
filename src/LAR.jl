@@ -282,6 +282,15 @@ function scalingargs(scaleargs)
 end
 
 # visualise an exploded `larlib` pair from a Julia pair (Verts,Cells)
+function viewexploded(v::Array{Float64,2}, fv::Array{Array{Int64,1},1}, scaleargs=1.2)
+	sx, sy, sz = scalingargs(scaleargs)
+	a = PyObject(v')
+	b = PyObject(Array{Any,1}[fv[k]-1 for k in 1:length(fv)])
+	verts = PyObject(a[:tolist]())
+	p.VIEW(p.EXPLODE(sx,sy,sz)(p.MKPOLS((verts,b))))
+end
+
+# visualise an exploded `larlib` pair from a Julia pair (Verts,Cells)
 function viewexploded(v::Array{Float64,2}, fv::Array{Any,1}, scaleargs=1.2)
 	sx, sy, sz = scalingargs(scaleargs)
 	a = PyObject(v')

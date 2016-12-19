@@ -37,10 +37,21 @@ function randomLines(lineNumber,scaling=1)
 	V,EV
 end
 
-# Generation of containment boxes of line segments  
-# Input: a LAR pair V,EV
+# Generation of containment boxes of LAR cells  
+# Input: a LAR pair V,EV (or V,FV etc)
 # Output: 
 # Containment boxes 
+function containment2DBoxes(V,EV)
+	boxes = Vector{Float64}[]
+	for k=1:size(EV,2) 
+		(v1,v2) = EV[:,k]
+		(x1,y1),(x2,y2) = V[:,v1],V[:,v2]
+		box = [min(x1,x2),min(y1,y2),max(x1,x2),max(y1,y2)]
+		boxes = push!(boxes,vcode(box))
+	end
+	boxes
+end
+
 function containment2DBoxes(V,EV)
 	boxes = Vector{Float64}[]
 	for k=1:size(EV,2) 
@@ -135,7 +146,34 @@ function splitting(bucket,below,above, finalBuckets,splittingStack)
 	end
 end
 
-# Iterative splitting of a box array
+
+# Iterative splitting of a 3D box array
+function boxBuckets3d(boxes)
+    bucket = Set(1:length(boxes))
+    splittingStack = [bucket]
+    finalBuckets = []
+    finalBuckets = Set{Int64}[]
+    while splittingStack != []
+        bucket = pop!(splittingStack)
+        below,above = splitOnThreshold(boxes,bucket,1)
+        below1,above1 = splitOnThreshold(boxes,above,2)
+        below2,above2 = splitOnThreshold(boxes,below,2)
+        below11,above11 = splitOnThreshold(boxes,above1,3)
+        below21,above21 = splitOnThreshold(boxes,below1,3)        
+        below12,above12 = splitOnThreshold(boxes,above2,3)
+        below22,above22 = splitOnThreshold(boxes,below2,3)  
+        splitting(above1,below11,above11, finalBuckets,splittingStack)
+        splitting(below1,below21,above21, finalBuckets,splittingStack)
+        splitting(above2,below12,above12, finalBuckets,splittingStack)
+        splitting(below2,below22,above22, finalBuckets,splittingStack)
+        finalBuckets = vcat(finalBuckets...)    
+    end
+    parts = geomPartitionate(boxes,finalBuckets)
+    [sort([h for h in parts[k]]) for k=1:length(parts)]
+end
+
+
+# Iterative splitting of a 2D box array
 function boxBuckets(boxes)
     bucket = Set(1:length(boxes))
     splittingStack = [bucket]
