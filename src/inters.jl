@@ -172,13 +172,13 @@ end
 
 # Iterative splitting of a 3D box array
 function boxBuckets3d(boxes)
-    bucket = Set(1:length(boxes))
+    bucket = Set(1:size(boxes,2))
     splittingStack = [bucket]
     finalBuckets = []
     finalBuckets = Set{Int64}[]
     while splittingStack != []
         bucket = pop!(splittingStack)
-        below,above = splitOnThreshold(boxes,bucket,1)
+        below,above = splitOnThreshold(boxes,bucket,1)	# TODO: create a 3D version
         below1,above1 = splitOnThreshold(boxes,above,2)
         below2,above2 = splitOnThreshold(boxes,below,2)
         below11,above11 = splitOnThreshold(boxes,above1,3)
