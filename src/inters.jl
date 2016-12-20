@@ -148,8 +148,10 @@ end
 
 
 function lar2boxes(V,CV)
-	boxes = zeros(Float64,(4,length(CV)))
-	for (k,cell) in enumerate(CV)
+	m = size(V,1)*2
+	boxes = zeros(Float64,(m,size(CV,2)))
+	for k=1:size(CV,2)
+	cell = CV[:,k]
 		println("\n",(k,cell))
 		verts = hcat([V[:,v] for v in cell]...)
 		println("\n")
