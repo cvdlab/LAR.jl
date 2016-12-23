@@ -251,7 +251,7 @@ function boxBuckets(boxes)
         finalBuckets = vcat(finalBuckets...)    
     end
     parts = geomPartitionate(boxes,finalBuckets)
-    [sort([h for h in parts[k]]) for k=1:length(parts)]
+    [sort([h for h in part]) for (k,part) in enumerate(parts) if part!=Set{Int64}()]
 end
 
 
@@ -284,7 +284,8 @@ function segmentIntersect(boxes,lineArray,lineStorage)
                     	if 0.0 != vcode([alpha])[1] != 1.0
                         	push!(lineStorage[line1], alpha) 
                         end
-                    	if 0.0 != vcode([alpha])[1] != 1.0
+                    	#if 0.0 != vcode([alpha])[1] != 1.0
+                    	if 0.0 != vcode([beta])[1] != 1.0
 	                        push!(lineStorage[line2], beta)
 	                    end
                         return p1+alpha*(p2-p1)
@@ -323,7 +324,7 @@ function lineIntersection(lineArray)
 		lineStorage[key] = Int[]
 	end
 	boxes = lar2boxes(lineArray...)
-	buckets = boxBuckets(boxes)
+	buckets = boxBuckets(size(boxes,2))
     for (h,bucket) in enumerate(buckets)
         pointBucket = lineBucketIntersect(boxes,lineArray, h,bucket, lineStorage)
     end
