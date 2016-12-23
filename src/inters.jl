@@ -263,13 +263,13 @@ function segmentIntersect(boxes,lineArray,lineStorage)
         p1,p2 = V[:,h1],V[:,h2]
         line1 = vcode([p1 p2])
         (x1,y1),(x2,y2) = p1,p2
-        B1,B2,B3,B4 = boxes[h]
+        B1,B2,B3,B4 = boxes[:,h]
         function segmentIntersect1(k)
 			k1,k2 = EV[:,k]
 			p3,p4 = V[:,k1],V[:,k2]
 			line2 = vcode([p3 p4])
 			(x3,y3),(x4,y4) = p3,p4
-			b1,b2,b3,b4 = boxes[k]
+			b1,b2,b3,b4 = boxes[:,k]
             if ! |(b3<B1 , B3<b1 , b4<B2 , B4<b2)
                 m23 = [p2 p3]
                 m14 = [p1 p4]
@@ -315,14 +315,14 @@ end
 # Accelerate intersection of lines 
 function lineIntersection(lineArray)
 	V,EV = lineArray
-	lineStorage = Dict{Array{Float64,2},Array{Float64,1}}()
+	lineStorage = Dict{Array{Float64,2},Array{Int64,1}}()
 	for k = 1:size(EV,2)
 		v1,v2 = EV[:,k]
 		p1,p2 = V[:,v1],V[:,v2]
 		key = vcode([p1 p2])
 		lineStorage[key] = Int[]
 	end
-	boxes = containment2DBoxes(lineArray...)
+	boxes = lar2boxes(lineArray...)
 	buckets = boxBuckets(boxes)
     for (h,bucket) in enumerate(buckets)
         pointBucket = lineBucketIntersect(boxes,lineArray, h,bucket, lineStorage)
