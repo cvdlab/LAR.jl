@@ -315,7 +315,7 @@ end
 # Accelerate intersection of lines 
 function lineIntersection(lineArray)
 	V,EV = lineArray
-	lineStorage = Dict{Array{Float64,2},Array{Int64,1}}()
+	lineStorage = Dict{Array{Float64,2},Array{Float64,1}}()
 	for k = 1:size(EV,2)
 		v1,v2 = EV[:,k]
 		p1,p2 = V[:,v1],V[:,v2]
