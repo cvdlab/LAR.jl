@@ -89,13 +89,15 @@ end
 
 # Computation of the 1D centroid of a list of 2D boxes. The direction  
 # is chosen depending on the value of the `xy in Set([1,2])` parameter. 
-function centroid(boxes,xy)
+function centroid(boxes,xyz)
 	average = mean(boxes)
 	n = Int(length(average)/2)
-	if xy == 1
+	if xyz == 1
 		median = (average[2] + average[2+n])/2
-	elseif xy == 2
+	elseif xyz == 2
 		median = (average[1] + average[1+n])/2
+	elseif xyz == 3
+		median = (average[3] + average[3+n])/2
 	end
 end
 
@@ -196,7 +198,6 @@ end
 function boxBuckets3d(boxes)
     bucket = Set(1:size(boxes,2))
     splittingStack = [bucket]
-    finalBuckets = []
     finalBuckets = Set{Int64}[]
     while splittingStack != []
         bucket = pop!(splittingStack)
@@ -214,27 +215,9 @@ function boxBuckets3d(boxes)
         finalBuckets = vcat(finalBuckets...)    
     end
     parts = geomPartitionate(boxes,finalBuckets)
-    [sort([h for h in parts[k]]) for k=1:length(parts)]
+    [sort([h for h in part]) for (k,part) in enumerate(parts) if part!=Set{Int64}()]
 end
 
-
-# Iterative splitting of a 2D box array
-#function boxBuckets(boxes)
-#    bucket = Set(1:length(boxes))
-#    splittingStack = [bucket]
-#    finalBuckets = Set{Int64}[]
-#    while splittingStack != []
-#        bucket = pop!(splittingStack)
-#        below,above = splitOnThreshold(boxes,bucket,1)
-#        below1,above1 = splitOnThreshold(boxes,above,2)
-#        below2,above2 = splitOnThreshold(boxes,below,2)
-#        splitting(above,below1,above1, finalBuckets,splittingStack)
-#        splitting(below,below2,above2, finalBuckets,splittingStack)  
-#        finalBuckets = vcat(finalBuckets...)    
-#    end
-#    parts = geomPartitionate(boxes,finalBuckets)
-#    [sort([h for h in parts[k]]) for k=1:length(parts)]
-#end
 
 # Iterative splitting of a 2D box array
 function boxBuckets(boxes)
@@ -324,7 +307,7 @@ function lineIntersection(lineArray)
 		lineStorage[key] = Int[]
 	end
 	boxes = lar2boxes(lineArray...)
-	buckets = boxBuckets(size(boxes,2))
+	buckets = boxBuckets(boxes)
     for (h,bucket) in enumerate(buckets)
         pointBucket = lineBucketIntersect(boxes,lineArray, h,bucket, lineStorage)
     end

@@ -21,3 +21,5 @@ models = [model1,model2]
 Z,FZ = cmerge(models)
 viewexploded(Z,FZ)
 
+boxes = lar2boxes(Z,FZ)
+parts = boxBuckets3d(boxes)
