@@ -154,18 +154,14 @@ function lar2boxes(V,CV::Array{Int64,2})
 	boxes = zeros(Float64,(m,size(CV,2)))
 	for k=1:size(CV,2)
 	cell = CV[:,k]
-		println("\n",(k,cell))
 		verts = hcat([V[:,v] for v in cell]...)
-		println("\n")
 		pmin,pmax = Float64[],Float64[],Float64[]
 		for h=1:size(verts,1)
 			coords = verts[h,:]
-			println(coords)
 			push!(pmin,minimum(coords))
 			push!(pmax,maximum(coords))
 		end
 		box = vcat(pmin,pmax)
-		println(box)
 		boxes[:,k] = box
 	end
 	return boxes
@@ -177,18 +173,14 @@ function lar2boxes(V,CV::Array{Array{Int64,1},1})
 	boxes = zeros(Float64,(m,n))
 	for k=1:n
 	cell = CV[k]
-		println("\n",(k,cell))
 		verts = hcat([V[:,v] for v in cell]...)
-		println("\n")
 		pmin,pmax = Float64[],Float64[],Float64[]
 		for h=1:size(verts,1)
 			coords = verts[h,:]
-			println(coords)
 			push!(pmin,minimum(coords))
 			push!(pmax,maximum(coords))
 		end
 		box = vcat(pmin,pmax)
-		println(box)
 		boxes[:,k] = box
 	end
 	return boxes

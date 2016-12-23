@@ -1,6 +1,7 @@
 using LAR
+include("src/inters.jl")
 
-v,(vv,ev,fv,cv) = p.larCuboids((2,2,1),true)
+v,(vv,ev,fv,cv) = p.larCuboids((3,3,2),true)
 V = hcat([Array{Float64,1}(v[k,:]) for k=1:size(v,1)]...)
 FV = hcat([Array{Int64,1}(fv[k,:]+1) for k=1:size(fv,1)]...)
 model1 = Any[V,FV]
@@ -23,3 +24,4 @@ viewexploded(Z,FZ)
 
 boxes = lar2boxes(Z,FZ)
 parts = boxBuckets3d(boxes)
+[length(part) for part in parts]
