@@ -89,12 +89,21 @@ end
 
 # Computation of the 1D centroid of a list of 2D boxes. The direction  
 # is chosen depending on the value of the `xy in Set([1,2])` parameter. 
-function centroid(boxes,xyz)
+function centroid(boxes::Array{Float64,2},xyz)
 	m = size(boxes,1)
 	n = m/2
 	average = zeros(m)
 	for h=1:m
 		average[h] = mean(boxes[h,:])
+	end
+	median = (average[xyz] + average[xyz+n])/2
+end
+
+function centroid(boxes::Array{Array{Float64,1},1},xyz)
+	n = Int(length(boxes[1])/2)
+	average = zeros(n*2)
+	for h=1:n*2
+		average[h] = mean(boxes[h])
 	end
 	median = (average[xyz] + average[xyz+n])/2
 end
@@ -185,7 +194,7 @@ function lar2boxes(V,CV::Array{Array{Int64,1},1})
 end
 
 # Iterative splitting of a 3D box array
-function boxBuckets3d(boxes)
+function boxBuckets3d(boxes::Array{Float64,2})
     bucket = Set(1:size(boxes,2))
     splittingStack = [bucket]
     finalBuckets = Set{Int64}[]
