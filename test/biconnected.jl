@@ -21,7 +21,7 @@ chains = boundary(W,EW)
 operator = boundaryOp(EW,chains)
 #println(full(operator))
 FW = [sort(collect(Set(vcat([EW[:,abs(e)] for e in face]...)))) for face in chains]
-viewLarIndices(W,EW,FW,0.5)
+viewLarIndices(W,EW,FW,0.01)
 
 boxes = lar2boxes(W,FW)
 parts = boxBuckets(boxes)

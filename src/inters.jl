@@ -90,15 +90,13 @@ end
 # Computation of the 1D centroid of a list of 2D boxes. The direction  
 # is chosen depending on the value of the `xy in Set([1,2])` parameter. 
 function centroid(boxes,xyz)
-	average = mean(boxes)
-	n = Int(length(average)/2)
-	if xyz == 1
-		median = (average[2] + average[2+n])/2
-	elseif xyz == 2
-		median = (average[1] + average[1+n])/2
-	elseif xyz == 3
-		median = (average[3] + average[3+n])/2
+	m = size(boxes,1)
+	n = m/2
+	average = zeros(m)
+	for h=1:m
+		average[h] = mean(boxes[h,:])
 	end
+	median = (average[xyz] + average[xyz+n])/2
 end
 
 
