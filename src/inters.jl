@@ -102,18 +102,18 @@ end
 
 # Splitting the input above and below a median threshold
 function splitOnThreshold(boxes,subset,coord)
-    theBoxes = [boxes[k] for k in subset]
+    theBoxes = [boxes[:,k] for k in subset]
     threshold = centroid(theBoxes,coord)
-    ncoords = Int(floor(length(boxes[1])/2))
+    ncoords = Int(floor(length(boxes[:,1])/2))
     a = coord % ncoords +1
     b = Int(a + ncoords)
     below,above = Int[],Int[]
     for k in subset
-        if boxes[k][a] <= threshold 
+        if boxes[:,k][a] <= threshold 
         	push!(below, k) end 
     end
     for k in subset
-        if boxes[k][b] >= threshold
+        if boxes[:,k][b] >= threshold
         	push!(above, k) end 
     end
     Set{Int64}(below), Set{Int64}(above)
@@ -147,7 +147,7 @@ function splitting(bucket,below,above, finalBuckets,splittingStack)
 end
 
 
-function lar2boxes(V,CV)
+function lar2boxes(V,CV::Array{Int64,2})
 	m = size(V,1)*2
 	boxes = zeros(Float64,(m,size(CV,2)))
 	for k=1:size(CV,2)
@@ -169,6 +169,28 @@ function lar2boxes(V,CV)
 	return boxes
 end
 
+function lar2boxes(V,CV::Array{Array{Int64,1},1})
+	m = size(V,1)*2
+	n = length(CV)
+	boxes = zeros(Float64,(m,n))
+	for k=1:n
+	cell = CV[k]
+		println("\n",(k,cell))
+		verts = hcat([V[:,v] for v in cell]...)
+		println("\n")
+		pmin,pmax = Float64[],Float64[],Float64[]
+		for h=1:size(verts,1)
+			coords = verts[h,:]
+			println(coords)
+			push!(pmin,minimum(coords))
+			push!(pmax,maximum(coords))
+		end
+		box = vcat(pmin,pmax)
+		println(box)
+		boxes[:,k] = box
+	end
+	return boxes
+end
 
 # Iterative splitting of a 3D box array
 function boxBuckets3d(boxes)
@@ -197,8 +219,26 @@ end
 
 
 # Iterative splitting of a 2D box array
+#function boxBuckets(boxes)
+#    bucket = Set(1:length(boxes))
+#    splittingStack = [bucket]
+#    finalBuckets = Set{Int64}[]
+#    while splittingStack != []
+#        bucket = pop!(splittingStack)
+#        below,above = splitOnThreshold(boxes,bucket,1)
+#        below1,above1 = splitOnThreshold(boxes,above,2)
+#        below2,above2 = splitOnThreshold(boxes,below,2)
+#        splitting(above,below1,above1, finalBuckets,splittingStack)
+#        splitting(below,below2,above2, finalBuckets,splittingStack)  
+#        finalBuckets = vcat(finalBuckets...)    
+#    end
+#    parts = geomPartitionate(boxes,finalBuckets)
+#    [sort([h for h in parts[k]]) for k=1:length(parts)]
+#end
+
+# Iterative splitting of a 2D box array
 function boxBuckets(boxes)
-    bucket = Set(1:length(boxes))
+    bucket = Set(1:size(boxes,2))
     splittingStack = [bucket]
     finalBuckets = Set{Int64}[]
     while splittingStack != []

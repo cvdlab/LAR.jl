@@ -23,7 +23,7 @@ operator = boundaryOp(EW,chains)
 FW = [sort(collect(Set(vcat([EW[:,abs(e)] for e in face]...)))) for face in chains]
 viewLarIndices(W,EW,FW,0.5)
 
-lar2boxes(W,FW)
+boxes = lar2boxes(W,FW)
 
 
 lineArray = randomLines(990,.3)
