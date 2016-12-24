@@ -91,12 +91,14 @@ end
 # is chosen depending on the value of the `xy in Set([1,2])` parameter. 
 function centroid(boxes::Array{Float64,2},xyz)
 	m = size(boxes,1)
-	n = m/2
-	average = zeros(m)
-	for h=1:m
-		average[h] = mean(boxes[h,:])
-	end
-	median = (average[xyz] + average[xyz+n])/2
+	if m != 0
+		n = m/2
+		average = zeros(m)
+		for h=1:m
+			average[h] = mean(boxes[h,:])
+		end
+		median = (average[xyz] + average[xyz+n])/2
+	end	
 end
 
 function centroid(boxes::Array{Array{Float64,1},1},xyz)
