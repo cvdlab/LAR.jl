@@ -39,3 +39,5 @@ operator = boundaryOp(EV,chains)
 FV = [sort(collect(Set(vcat([EV[:,abs(e)] for e in face]...)))) for face in chains]
 viewLarIndices(V,EV,FV,0.1)
 
+boxes = lar2boxes(V,FV)
+parts = boxBuckets(boxes)
