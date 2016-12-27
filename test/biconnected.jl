@@ -23,8 +23,8 @@ operator = boundaryOp(EW,chains)
 FW = [sort(collect(Set(vcat([EW[:,abs(e)] for e in face]...)))) for face in chains]
 viewLarIndices(W,EW,FW,0.5)
 
-boxes = lar2boxes(W,FW)
-parts = boxBuckets(boxes)
+#boxes = lar2boxes(W,FW)
+#parts = boxBuckets(boxes)
 
 
 lineArray = randomLines(990,.3)
@@ -39,5 +39,5 @@ operator = boundaryOp(EV,chains)
 FV = [sort(collect(Set(vcat([EV[:,abs(e)] for e in face]...)))) for face in chains]
 viewLarIndices(V,EV,FV,0.1)
 
-boxes = lar2boxes(V,FV)
-parts = boxBuckets(boxes)
+#boxes = lar2boxes(V,FV)
+#parts = boxBuckets(boxes)

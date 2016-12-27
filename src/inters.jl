@@ -100,7 +100,6 @@ function centroid(boxes::Array{Float64,2},xyz)
 end
 
 function centroid(boxes::Array{Array{Float64,1},1},xyz)
-	println("\nEccomi 1")
 	myboxes = hcat(boxes...)
 	return centroid(myboxes::Array{Float64,2},xyz)
 end
@@ -108,6 +107,9 @@ end
 
 # Splitting the input above and below a median threshold
 function splitOnThreshold(boxes,subset,coord)
+	if subset==Set{Int64}()
+		return Set{Int64}(), Set{Int64}()
+	end
     theBoxes = [boxes[:,k] for k in subset]
     threshold = centroid(theBoxes,coord)
     ncoords = Int(floor(length(boxes[:,1])/2))
@@ -217,7 +219,6 @@ end
 
 # Iterative splitting of a 2D box array
 function boxBuckets(boxes)
-	println("\nEccomi 2")
     bucket = Set(1:size(boxes,2))
     splittingStack = [bucket]
     finalBuckets = Set{Int64}[]
