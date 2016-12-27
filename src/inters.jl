@@ -91,7 +91,7 @@ end
 # is chosen depending on the value of the `xy in Set([1,2])` parameter. 
 function centroid(boxes::Array{Float64,2},xyz)
 	m = size(boxes,1)
-	n = m/2
+	n = Int(m/2)
 	average = zeros(m)
 	for h=1:m
 		average[h] = mean(boxes[h,:])
@@ -100,12 +100,9 @@ function centroid(boxes::Array{Float64,2},xyz)
 end
 
 function centroid(boxes::Array{Array{Float64,1},1},xyz)
-	n = Int(length(boxes[1])/2)
-	average = zeros(n*2)
-	for h=1:n*2
-		average[h] = mean(boxes[h])
-	end
-	median = (average[xyz] + average[xyz+n])/2
+	println("\nEccomi 1")
+	myboxes = hcat(boxes...)
+	return centroid(myboxes::Array{Float64,2},xyz)
 end
 
 
@@ -220,6 +217,7 @@ end
 
 # Iterative splitting of a 2D box array
 function boxBuckets(boxes)
+	println("\nEccomi 2")
     bucket = Set(1:size(boxes,2))
     splittingStack = [bucket]
     finalBuckets = Set{Int64}[]
