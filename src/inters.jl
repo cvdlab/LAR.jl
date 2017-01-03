@@ -194,52 +194,6 @@ function lar2boxes(V,CV::Array{Array{Int64,1},1})
 	return boxes
 end
 
-# Iterative splitting of a 3D box array
-function boxBuckets3d(boxes::Array{Float64,2})
-    bucket = Set(1:size(boxes,2))
-    splittingStack = [bucket]
-    finalBuckets = Set{Int64}[]
-    while splittingStack != []
-        bucket = pop!(splittingStack)
-        below,above = splitOnThreshold(boxes,bucket,1)	# TODO: create a 3D version
-        below1,above1 = splitOnThreshold(boxes,above,2)
-        below2,above2 = splitOnThreshold(boxes,below,2)
-        below11,above11 = splitOnThreshold(boxes,above1,3)
-        below21,above21 = splitOnThreshold(boxes,below1,3)        
-        below12,above12 = splitOnThreshold(boxes,above2,3)
-        below22,above22 = splitOnThreshold(boxes,below2,3)  
-        splitting(above1,below11,above11, finalBuckets,splittingStack)
-        splitting(below1,below21,above21, finalBuckets,splittingStack)
-        splitting(above2,below12,above12, finalBuckets,splittingStack)
-        splitting(below2,below22,above22, finalBuckets,splittingStack)
-        finalBuckets = vcat(finalBuckets...)    
-    end
-    parts = geomPartitionate(boxes,finalBuckets)
-    [sort([h for h in part]) for (k,part) in enumerate(parts) if part!=Set{Int64}()]
-end
-
-
-# Iterative splitting of a 2D box array
-function boxBuckets(boxes)
-    bucket = Set(1:size(boxes,2))
-    splittingStack = [bucket]
-    finalBuckets = Set{Int64}[]
-    while splittingStack != []
-        bucket = pop!(splittingStack)
-        below,above = splitOnThreshold(boxes,bucket,1)
-        below1,above1 = splitOnThreshold(boxes,above,2)
-        below2,above2 = splitOnThreshold(boxes,below,2)
-        splitting(above,below1,above1, finalBuckets,splittingStack)
-        println("\splittingStack = ",splittingStack)
-        splitting(below,below2,above2, finalBuckets,splittingStack)  
-        if length(finalBuckets) != 0
-			finalBuckets = vcat(finalBuckets...)    
-			println("\splittingStack = ",splittingStack)
-		end
-    end
-    parts = geomPartitionate(boxes,finalBuckets)
-    [sort([h for h in part]) for (k,part) in enumerate(parts) if part!=Set{Int64}()]
-end
 
 
 # Intersection of two line segments 
@@ -299,6 +253,37 @@ function lineBucketIntersect(boxes,lineArray, h,bucket, lineStorage)
     intersectionPoints
 end
 
+function boxBucketing(boxes::Array{Float64,2})
+	nboxes = size(boxes,2)
+	dim = Int(size(boxes,1)/2)
+	trees,boxes1D = Any[],Any[]
+	# preparation of d interval-trees
+	for d=1:dim
+		intervals = [ (boxes[d,k], boxes[d+dim,k], k) for k=1:nboxes ];
+		push!(boxes1D, intervals)
+		tree1D = IntervalTree{Float64, IntervalValue{Float64, Int64}}();
+		for triple in intervals
+			push!(tree1D, IntervalValue{Float64, Int64}(triple...));
+		end
+		push!(trees, tree1D)
+	end
+	# execution of spatial queries
+	buckets,queries = Any[],Any[]
+	for k=1:nboxes
+		sets = Any[]
+		for d=1:dim
+			push!(sets, Set(Int64[]))
+			query = boxes1D[d][k]
+			for item in intersect(trees[d],query[1:2])
+				push!(sets[d], item.value)
+			end
+		end
+		push!(buckets,intersect(sets...))
+	end
+	buckets = [sort(collect(bucket)) for bucket in buckets]
+	return buckets
+end
+
 
 # Accelerate intersection of lines 
 function lineIntersection(lineArray)
@@ -311,7 +296,7 @@ function lineIntersection(lineArray)
 		lineStorage[key] = Int[]
 	end
 	boxes = lar2boxes(lineArray...)
-	buckets = boxBuckets(boxes)
+	buckets = boxBucketing(boxes)
     for (h,bucket) in enumerate(buckets)
         pointBucket = lineBucketIntersect(boxes,lineArray, h,bucket, lineStorage)
     end
