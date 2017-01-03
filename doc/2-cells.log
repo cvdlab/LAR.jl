@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.7.20)  17 DEC 2016 11:23
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.7.20)  3 JAN 2017 12:58
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -189,7 +189,11 @@ Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
 ))
-(./2-cells.aux)
+(./2-cells.aux
+
+LaTeX Warning: Label `fig:testWall' multiply defined.
+
+)
 \openout1 = `2-cells.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 20.
@@ -208,8 +212,7 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 20.
 LaTeX Font Info:    ... okay on input line 20.
 \AtBeginShipoutBox=\box26
 Package hyperref Info: Link coloring OFF on input line 20.
-
-(/usr/local/texlive/2016/texmf-dist/tex/latex/hyperref/nameref.sty
+ (/usr/local/texlive/2016/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 
 (/usr/local/texlive/2016/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
@@ -461,22 +464,45 @@ File: rectangles3.pdf Graphic file (type pdf)
  <use rectangles3.pdf>
 Package pdftex.def Info: rectangles3.pdf used on input line 107.
 (pdftex.def)             Requested size: 171.99922pt x 230.98761pt.
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 113.
+
+<2dcells0.pdf, id=85, 762.85pt x 737.75626pt>
+File: 2dcells0.pdf Graphic file (type pdf)
+ <use 2dcells0.pdf>
+Package pdftex.def Info: 2dcells0.pdf used on input line 116.
+(pdftex.def)             Requested size: 141.04277pt x 136.40396pt.
+
+<2dcells1.pdf, id=86, 742.775pt x 716.6775pt>
+File: 2dcells1.pdf Graphic file (type pdf)
+ <use 2dcells1.pdf>
+Package pdftex.def Info: 2dcells1.pdf used on input line 117.
+(pdftex.def)             Requested size: 141.04277pt x 136.08266pt.
+
+<2dcells2.pdf, id=87, 738.76pt x 713.66624pt>
+File: 2dcells2.pdf Graphic file (type pdf)
+ <use 2dcells2.pdf>
+Package pdftex.def Info: 2dcells2.pdf used on input line 118.
+(pdftex.def)             Requested size: 141.04277pt x 136.25137pt.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 124.
  [3 <./testWall1.pdf> <./testWall2.pdf>] [4 <./rectangles0.pdf> <./rectangles1.
-pdf> <./rectangles2.pdf> <./rectangles3.pdf>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 113.
+pdf> <./rectangles2.pdf> <./rectangles3.pdf>] [5 <./2dcells0.pdf> <./2dcells1.p
+df> <./2dcells2.pdf>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 124.
  (./2-cells.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 113.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 113.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 124.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 124.
 Package rerunfilecheck Info: File `2-cells.out' has not changed.
 (rerunfilecheck)             Checksum: 2CF6A3529171C4AEE9FB9ED52ACC87F9;115.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 113.
+
+
+LaTeX Warning: There were multiply-defined labels.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 124.
  ) 
 Here is how much of TeX's memory you used:
- 5859 strings out of 493014
- 86148 string characters out of 6133351
- 176055 words of memory out of 5000000
- 9350 multiletter control sequences out of 15000+600000
+ 5876 strings out of 493014
+ 86399 string characters out of 6133351
+ 176346 words of memory out of 5000000
+ 9362 multiletter control sequences out of 15000+600000
  12867 words of font info for 50 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  29i,6n,28p,643b,325s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -489,10 +515,10 @@ sr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr
 ocal/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/loca
 l/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local
 /texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt8.pfb>
-Output written on 2-cells.pdf (4 pages, 2363939 bytes).
+Output written on 2-cells.pdf (5 pages, 2595243 bytes).
 PDF statistics:
- 191 PDF objects out of 1000 (max. 8388607)
- 133 compressed objects within 2 object streams
- 11 named destinations out of 1000 (max. 500000)
- 67 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 230 PDF objects out of 1000 (max. 8388607)
+ 159 compressed objects within 2 object streams
+ 13 named destinations out of 1000 (max. 500000)
+ 82 words of extra memory for PDF output out of 10000 (max. 10000000)
 

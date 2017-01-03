@@ -180,9 +180,9 @@ function lar2boxes(V,CV::Array{Array{Int64,1},1})
 	n = length(CV)
 	boxes = zeros(Float64,(m,n))
 	for k=1:n
-	cell = CV[k]
+		cell = CV[k]
 		verts = hcat([V[:,v] for v in cell]...)
-		pmin,pmax = Float64[],Float64[],Float64[]
+		pmin,pmax = Float64[],Float64[]
 		for h=1:size(verts,1)
 			coords = verts[h,:]
 			push!(pmin,minimum(coords))
