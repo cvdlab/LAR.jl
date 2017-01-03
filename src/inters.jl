@@ -148,9 +148,11 @@ function splitting(bucket,below,above, finalBuckets,splittingStack)
 	if ( a | b | c )
 		push!(finalBuckets, below) 
 		push!(finalBuckets, above) 
+		println("pushed finalBuckets")
 	else
 		push!(splittingStack, below) 
 		push!(splittingStack, above) 
+		println("pushed splittingStack")
 	end
 end
 
@@ -228,8 +230,12 @@ function boxBuckets(boxes)
         below1,above1 = splitOnThreshold(boxes,above,2)
         below2,above2 = splitOnThreshold(boxes,below,2)
         splitting(above,below1,above1, finalBuckets,splittingStack)
+        println("\splittingStack = ",splittingStack)
         splitting(below,below2,above2, finalBuckets,splittingStack)  
-        finalBuckets = vcat(finalBuckets...)    
+        if length(finalBuckets) != 0
+			finalBuckets = vcat(finalBuckets...)    
+			println("\splittingStack = ",splittingStack)
+		end
     end
     parts = geomPartitionate(boxes,finalBuckets)
     [sort([h for h in part]) for (k,part) in enumerate(parts) if part!=Set{Int64}()]

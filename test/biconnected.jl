@@ -23,11 +23,11 @@ operator = boundaryOp(EW,chains)
 FW = [sort(collect(Set(vcat([EW[:,abs(e)] for e in face]...)))) for face in chains]
 viewLarIndices(W,EW,FW,0.5)
 
-#boxes = lar2boxes(W,FW)
-#parts = boxBuckets(boxes)
+boxes = lar2boxes(W,FW)
+parts = boxBuckets(boxes)
 
 
-lineArray = randomLines(990,.3)
+lineArray = randomLines(500,.3)
 
 view(lineArray...)
 V,EV = lines2lar(lineArray)
@@ -39,5 +39,30 @@ operator = boundaryOp(EV,chains)
 FV = [sort(collect(Set(vcat([EV[:,abs(e)] for e in face]...)))) for face in chains]
 viewLarIndices(V,EV,FV,0.1)
 
-#boxes = lar2boxes(V,FV)
-#parts = boxBuckets(boxes)
+boxes = lar2boxes(V,FV)
+parts = boxBuckets(boxes)
+
+function boxes2lar(boxes)
+	V = Array{Float64,1}[]
+	EV = Array{Int64,1}[]
+	FV = Array{Int64,1}[]
+	for k=1:size(boxes,2)
+		xm,ym,xM,yM = boxes[:,k]
+		push!(V,[xm,ym])
+		push!(V,[xM,yM])
+		push!(V,[xm,yM])
+		push!(V,[xM,ym])
+		push!(EV,[ 4(k-1)+1, 4(k-1)+3 ])
+		push!(EV,[ 4(k-1)+1, 4(k-1)+4 ])
+		push!(EV,[ 4(k-1)+2, 4(k-1)+3 ])
+		push!(EV,[ 4(k-1)+2, 4(k-1)+4 ])
+		push!(FV,[ 4(k-1)+1, 4(k-1)+2, 4(k-1)+3, 4(k-1)+4])
+	end
+	return hcat(V...), hcat(EV...), hcat(FV...)
+end
+
+V,EV,FV = boxes2lar(boxes)
+view(V,EV)
+
+
+
