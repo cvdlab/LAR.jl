@@ -87,7 +87,7 @@ end
 params = PyObject(pyeval("list([1.,0.,0.,0.1,  0.,1.,0.,0.1,  0.,0.,1.,0.1, 0.,0.,0.,0.1, 100.])"))
 glass = p.MATERIAL(params)
 
-cell = 100
+cell = 53
 Z,EZ,FZ = boxes3lar(lar2boxes(X,[FX[:,f] for f in buckets[cell]]))
 pivot = p.COLOR(p.RED)(p.JOIN(lar2hpc(boxes3lar(boxes[:,cell])[1:2]...)))
 bucket = lar2hpc(Z,FZ)
@@ -124,9 +124,13 @@ function submanifoldMapping(V::Array{Float64,2},FV::Array{Array{Int64,1},1},pivo
     return transform
 end
 
-
+M = submanifoldMapping(X,FX,cell)
 ZZ = vcat(Z,ones((1,size(Z,2))))
 Y = M*ZZ
-bucket = lar2hpc(Y[1:3,1:size(Z,2),FZ)
-p.VIEW(glass(bucket))
+bucket = lar2hpc(Y[1:3,1:size(Z,2)],FZ)
+W,EW,FW = boxes3lar(boxes[:,cell])
+WW = vcat(W,ones((1,size(W,2))))
+Y = M*WW
+pivot = p.COLOR(p.RED)(p.JOIN(lar2hpc(Y[1:3,1:size(W,2)],FW)))
+p.VIEW(p.STRUCT([glass(bucket),pivot]))
 
