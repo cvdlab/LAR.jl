@@ -87,8 +87,46 @@ end
 params = PyObject(pyeval("list([1.,0.,0.,0.1,  0.,1.,0.,0.1,  0.,0.,1.,0.1, 0.,0.,0.,0.1, 100.])"))
 glass = p.MATERIAL(params)
 
-cell = 111
+cell = 100
 Z,EZ,FZ = boxes3lar(lar2boxes(X,[FX[:,f] for f in buckets[cell]]))
 pivot = p.COLOR(p.RED)(p.JOIN(lar2hpc(boxes3lar(boxes[:,cell])[1:2]...)))
 bucket = lar2hpc(Z,FZ)
 p.VIEW(p.STRUCT([glass(bucket),pivot]))
+
+
+function submanifoldMapping(V::Array{Float64,2},FV::Array{Int64,2},pivotFace)
+	FW = [FV[:,k] for k=1:size(FV,2)]
+	return submanifoldMapping(V,FW,pivotFace)
+end
+
+function submanifoldMapping(V::Array{Float64,2},FV::Array{Array{Int64,1},1},pivotFace)
+    tx,ty,tz = V[:,FV[pivotFace][1]]
+    T = eye(4)
+    T[1,4], T[2,4], T[3,4] = -tx,-ty,-tz
+    facet = [ V[:,v] - [tx,ty,tz] for v in FV[pivotFace] ]
+    normal = normalize(p.COVECTOR(facet)[2:end])
+    a = normal
+    b = Float64[0,0,1]
+    axis = normalize(cross(a,b))
+    angle = atan2(norm(cross(a,b)), dot(a,b))    
+    # general 3D rotation (Rodrigues' rotation formula)    
+    M = eye(4)
+    Cos, Sin = cos(angle), sin(angle)
+    I, u = eye(3), axis
+    Ux = [0        -u[3]      u[2];
+          u[3]        0      -u[1];
+         -u[2]      u[1]        0]
+    UU = [u[1]*u[1]    u[1]*u[2]    u[1]*u[3] ;
+          u[2]*u[1]    u[2]*u[2]    u[2]*u[3] ;
+          u[3]*u[1]    u[3]*u[2]    u[3]*u[3] ]
+    M[1:3,1:3] = Cos*I + Sin*Ux + (1.0-Cos)*UU
+    transform = M * T
+    return transform
+end
+
+
+ZZ = vcat(Z,ones((1,size(Z,2))))
+Y = M*ZZ
+bucket = lar2hpc(Y[1:3,1:size(Z,2),FZ)
+p.VIEW(glass(bucket))
+
