@@ -20,7 +20,7 @@ function crossRelation(FV::Array{Array{Int64,1},1},EV::Array{Int64,2})
 	sparseEV = cellComplex(EV)
 	sparseEF = (sparseFV' * sparseEV)'
 	I,J,V = findnz(sparseEF)
-	FE = [Int64[] for k=1:size(FV,2)]
+	FE = [Int64[] for k=1:length(FV)]
 	for (i,j,v) in zip(I,J,V) 
 		if v==2
 			push!(FE[j],i)
