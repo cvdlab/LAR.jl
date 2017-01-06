@@ -73,6 +73,17 @@ function cellComplex(cells::Cells)
 	sparse(I,J,V)
 end
 
+function cellComplex(cells::Array{Array{Int64,1},1})
+	I,J,V = Int[],Int[],Int[]
+	m,n = length(cells),maximum(vcat(cells...))
+	for j=1:m
+		for i=1:length(cells[j])
+			push!(I,cells[j][i]); push!(J,j); push!(V,1)
+		end
+	end
+	sparse(I,J,V)
+end
+
 # constructor of a Basis instance from its cells
 function cellComplex(cells::Array{Any,2})
 	I,J,V = Int[],Int[],Int[]
