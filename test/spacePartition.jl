@@ -30,10 +30,36 @@ function crossRelation(FV::Array{Array{Int64,1},1},EV::Array{Int64,2})
 end
 
 
-function spacePartition(V::Array{Float64,2}, Array{Int64,2}, EV::Array{Int64,2})
+function spacePartition(V::Array{Float64,2}, FV::Array{Int64,2}, EV::Array{Int64,2})
 	FW = [FV[:,k] for k=1:size(FV,2)]
 	out = spacePartition(V,FW,EV)
 end
+
+
+
+function subModel(V::Array{Float64,2}, FV::Array{Int64,2}, EV::Array{Int64,2}, 
+				bucket::Array{Int64,1},FE::Array{Array{Int64,1},1})
+	FW = [FV[:,k] for k=1:size(FV,2)]
+	out = subModel(V,FW,EV,bucket,FE)
+end
+
+function subModel(V::Array{Float64,2}, FV::Array{Array{Int64,1},1}, 
+					EV::Array{Int64,2},bucket::Array{Int64,1},FE::Array{Array{Int64,1},1})
+	FZ = [FV[f] for f in bucket]
+	EZ = hcat(collect(Set([EV[:,e] for f in bucket for e in FE[f]]))...)
+
+	oldVertIndices = Set(Int64[])
+	for k=1:length(bucket)
+		union!(oldVertIndices, Set(FZ[k]))
+	end	
+	vdict = Dict(zip(oldVertIndices,1:length(oldVertIndices)))
+	FZ = [[vdict[v] for v in FZ[k]] for k=1:length(FZ)]
+	EZ = hcat([[vdict[v] for v in EZ[:,k]] for k=1:size(EZ,2)]...)
+	Z = hcat([V[:,v] for v in keys(vdict)]...)
+	return Z,FZ,EZ
+end
+
+
 
 function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1}, 
 						EV::Array{Int64,2})
@@ -45,21 +71,23 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 	
 	for (f,F) in enumerate(buckets)
 		@show (f,F)
-		Z,EZ,FZ = boxes3lar(lar2boxes(X,[FX[:,f] for f in buckets[cell]]))
+		""" Submodel extraction from F[f] """
+		Z,FZ,EZ = subModel(V,FV,EV,F,FE)
+		
 		""" Computation of submanifold map M moving f to z=0 """
-		M = submanifoldMapping(V,FV,cell)
+		M = submanifoldMapping(V,FV,f)
 		
-		
-		
-		ZZ = vcat(Z,ones((1,size(Z,2))))
-		Y = M*ZZ
-		bucket = lar2hpc(Y[1:3,1:size(Z,2)],FZ)
-		bucketEdges = lar2hpc(Y[1:3,1:size(Z,2)],EZ)
-		
-		""" Transformation of S(f) by M, giving S = (W,EW) := M(S(f)) """
+		""" Transformation of F(f) by M, giving (W,EW,FW) := M(F(f)) """
+		Z1 = vcat(Z,ones((1,size(Z,2))))
+		Y = M * Z1
+		Z = Y[ 1:3, : ]
+		#bucket = lar2hpc(Z,FZ)
+		#bucketEdges = lar2hpc(Z,EZ)
 		
 		""" filtering of EW edges traversing z=0, """
 		""" giving EZ edges and incident faces FZEZ """
+		
+		
 		
 		""" for each face in FZEZ, computation of the aligned set of points p(z=0) """
 		
