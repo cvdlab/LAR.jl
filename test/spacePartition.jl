@@ -30,12 +30,6 @@ function crossRelation(FV::Array{Array{Int64,1},1},EV::Array{Int64,2})
 end
 
 
-function spacePartition(V::Array{Float64,2}, FV::Array{Int64,2}, EV::Array{Int64,2})
-	FW = [FV[:,k] for k=1:size(FV,2)]
-	out = spacePartition(V,FW,EV)
-end
-
-
 
 function subModel(V::Array{Float64,2}, FV::Array{Int64,2}, EV::Array{Int64,2}, 
 				bucket::Array{Int64,1},FE::Array{Array{Int64,1},1})
@@ -45,25 +39,48 @@ end
 
 function subModel(V::Array{Float64,2}, FV::Array{Array{Int64,1},1}, 
 					EV::Array{Int64,2},bucket::Array{Int64,1},FE::Array{Array{Int64,1},1})
-	FZ = [FV[f] for f in bucket]
-	EZ = hcat(collect(Set([EV[:,e] for f in bucket for e in FE[f]]))...)
+	FW = [FV[f] for f in bucket]
+	EW = hcat(collect(Set([EV[:,e] for f in bucket for e in FE[f]]))...)
 
-	oldVertIndices = Set(Int64[])
+	oldVerts = Set(Int64[])
 	for k=1:length(bucket)
-		union!(oldVertIndices, Set(FZ[k]))
+		union!(oldVerts, Set(FW[k]))
 	end	
-	vdict = Dict(zip(oldVertIndices,1:length(oldVertIndices)))
-	FZ = [[vdict[v] for v in FZ[k]] for k=1:length(FZ)]
-	EZ = hcat([[vdict[v] for v in EZ[:,k]] for k=1:size(EZ,2)]...)
-	Z = hcat([V[:,v] for v in keys(vdict)]...)
-	return Z,FZ,EZ
+	olds = collect(oldVerts)
+	vdict = Dict(zip(olds, 1:length(olds)))
+	fz = [[vdict[v] for v in FW[k]] for k=1:length(FW)]
+	ez = hcat([[vdict[v] for v in EW[:,k]] for k=1:size(EW,2)]...)
+	z = hcat([V[:,v] for v in keys(vdict)]...)
+	return z,fz,ez
+end
+
+
+function visualize(V,FV,EV,f)
+	FW = [FV[:,k] for k=1:size(FV,2)]
+	out = visualize(V,FW,EV,f)
+end
+
+function visualize(V,FV,EV,f)
+	bucket = lar2hpc(V,FV)
+	bucketEdges = lar2hpc(V,EV)
+	params = PyObject(pyeval("list([1.,0.,0.,0.1,  0.,1.,0.,0.1,  
+				0.,0.,1.,0.1, 0.,0.,0.,0.1, 100.])"))
+	glass = p.MATERIAL(params)
+	pivot = p.COLOR(p.RED)(p.JOIN(lar2hpc(V,[FV[f]])))
+	p.VIEW(p.STRUCT([glass(bucket),bucketEdges,pivot]))
 end
 
 
 
-function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1}, 
-						EV::Array{Int64,2})
+function spacePartition(V::Array{Float64,2}, FV::Array{Int64,2}, EV::Array{Int64,2},
+						debug=false)
+	FW = [FV[:,k] for k=1:size(FV,2)]
+	out = spacePartition(V,FW,EV,debug)
+end
 
+
+function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1}, 
+						EV::Array{Int64,2},debug=false)
 	""" input: face index f; candidate incident faces F[f]; """
 	boxes = lar2boxes(V,FV)
 	buckets = boxBucketing(boxes)
@@ -71,8 +88,9 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 	
 	for (f,F) in enumerate(buckets)
 		@show (f,F)
-		""" Submodel extraction from F[f] """
+		""" F[f] submodel extraction from (V,FV,EV) """
 		Z,FZ,EZ = subModel(V,FV,EV,F,FE)
+		if debug visualize(Z,FZ,EZ,f) end
 		
 		""" Computation of submanifold map M moving f to z=0 """
 		M = submanifoldMapping(V,FV,f)
@@ -81,9 +99,11 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 		Z1 = vcat(Z,ones((1,size(Z,2))))
 		Y = M * Z1
 		Z = Y[ 1:3, : ]
-		#bucket = lar2hpc(Z,FZ)
-		#bucketEdges = lar2hpc(Z,EZ)
+		if debug visualize(Z,FZ,EZ,f) end
 		
+	end
+end
+
 		""" filtering of EW edges traversing z=0, """
 		""" giving EZ edges and incident faces FZEZ """
 		
@@ -103,7 +123,7 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 	
 end
 
-V,FV,EV = X,FX,EX
+V,FV,EV = deepcopy((X,FX,EX))
 
 chains = boundary(V,EV)
 operator = boundaryOp(EW,chains)

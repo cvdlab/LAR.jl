@@ -112,7 +112,11 @@ function submanifoldMapping(V::Array{Float64,2},FV::Array{Array{Int64,1},1},pivo
     normal = normalize(p.COVECTOR(facet)[2:end])
     a = normal
     b = Float64[0,0,1]
-    axis = normalize(cross(a,b))
+    if a!=b 
+    	axis = normalize(cross(a,b))
+    else
+    	axis = b
+    end
     angle = atan2(norm(cross(a,b)), dot(a,b))    
     # general 3D rotation (Rodrigues' rotation formula)    
     M = eye(4)
@@ -125,7 +129,7 @@ function submanifoldMapping(V::Array{Float64,2},FV::Array{Array{Int64,1},1},pivo
           u[2]*u[1]    u[2]*u[2]    u[2]*u[3] ;
           u[3]*u[1]    u[3]*u[2]    u[3]*u[3] ]
     M[1:3,1:3] = Cos*I + Sin*Ux + (1.0-Cos)*UU
-    transform = M * T
+    transform = M *  T
     return transform
 end
 
