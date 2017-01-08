@@ -50,7 +50,7 @@ function subModel(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 	vdict = Dict(zip(olds, 1:length(olds)))
 	fz = [[vdict[v] for v in FW[k]] for k=1:length(FW)]
 	ez = hcat([[vdict[v] for v in EW[:,k]] for k=1:size(EW,2)]...)
-	z = hcat([V[:,v] for v in keys(vdict)]...)
+	z = hcat([V[:,v] for v in olds]...)
 	pivot = find(bucket .== f)[1]
 	return z,fz,ez,pivot
 end
