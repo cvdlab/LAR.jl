@@ -72,6 +72,15 @@ function visualize(Z,FZ::Array{Array{Int64,1},1},EZ,f)
 end
 
 
+function meetZero( Z, vpair )
+	(u,v) = vpair
+    testValue = Z[:,u][3] * Z[:,v][3]
+    if testValue > abs(10^-6.)
+        return false
+    else 
+    	return true
+    end
+end
 
 function spacePartition(V::Array{Float64,2}, FV::Array{Int64,2}, EV::Array{Int64,2},
 						debug=false)
@@ -102,10 +111,32 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 		Z = Y[ 1:3, : ]
 		if debug visualize(Z,FZ,EZ,pivot) end
 		
+		""" filtering of EW edges traversing z=0, """
+		fe = crossRelation(FZ,EZ)
+		edges4face = [[EZ[:,e] for e in face] for (k,face) in enumerate(fe) if k!=pivot]
+		dangling = [[vpair for vpair in edges if meetZero( Z, vpair )] 
+					for edges in edges4face]
+		single = Set(vcat([p.AA(sort)(pairs) for pairs in dangling if pairs!=[]]...))
+		vpairs = collect(single)
+		
+		""" select pivot edges and 1D Lar model """
+		
+		pivotEdges = fe[pivot]
+		v,ev = Z,[EZ[:,k] for k in pivotEdges]
+
+		""" Remove non-pivot vpairs with both external vertices """
+		
+		classify = pointInPolygonClassification(v[1:2,:],ev)
+		function out(vk) 
+			classify(Z[1:2,vk]) != "p_out"
+		end
+		edges = [(v1,v2) for (v1,v2) in vpairs if (out(v1) | out(v2))]
+
 	end
 end
 
-		""" filtering of EW edges traversing z=0, """
+
+		
 		""" giving EZ edges and incident faces FZEZ """
 		
 		
