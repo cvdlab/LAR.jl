@@ -163,6 +163,16 @@ function meetZero( Z, vpair )
     end
 end
 
+function crossZero( Z, vpair )
+	(u,v) = vpair
+    testValue = sign(vcode(Z[:,u])[3]) * sign(vcode(Z[:,v])[3])
+    if testValue == -1
+        return true
+    else 
+    	return false
+    end
+end
+
 function spacePartition(V::Array{Float64,2}, FV::Array{Int64,2}, EV::Array{Int64,2},
 						debug=false)
 	FW = [FV[:,k] for k=1:size(FV,2)]
@@ -199,16 +209,18 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 					for edges in edges4face]
 		single = Set(vcat([p.AA(sort)(pairs) for pairs in dangling if pairs!=[]]...))
 		vpairs = collect(single)
+		crossing = [[vpair for vpair in edges if crossZero( Z, vpair )] 
+					for edges in edges4face]
+		singlecross = Set(vcat([p.AA(sort)(pairs) for pairs in crossing if pairs!=[]]...))
+		vpairscross = collect(singlecross)
 		
 		""" select pivot edges and 1D Lar model """
-		
 		pivotEdges = fe[pivot]
 		v,ev = Z,[EZ[:,k] for k in pivotEdges]
 		@show v
 		@show ev
 
 		""" Remove non-pivot vpairs with both external vertices """
-		
 		classify = pointInPolygonClassification(v[1:2,:],ev)
 		function out(vk) 
 			println("\neccomi")
@@ -218,10 +230,12 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 			println(classify(Z[1:2,vk]))
 			return flag != "p_out"
 		end
-		edges = hcat([[v1,v2] for (v1,v2) in vpairs if (out(v1) | out(v2))]...)
+		edges = [[v1,v2] for (v1,v2) in vpairs if (out(v1) | out(v2))]
+		edges = hcat(vcat(edges,vpairscross)...)
 		if debug visualize(Z,FZ,edges,pivot) end
 
 		""" for each face in FZEZ, computation of the aligned set of points p(z=0) """
+		
 		
 		""" Remove external vertices """
 		
