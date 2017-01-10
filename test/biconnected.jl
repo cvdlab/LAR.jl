@@ -24,7 +24,7 @@ FW = [sort(collect(Set(vcat([EW[:,abs(e)] for e in face]...)))) for face in chai
 viewLarIndices(W,EW,FW,0.5)
 
 boxes = lar2boxes(W,FW)
-parts = boxBuckets(boxes)
+parts = boxBucketing(boxes)
 
 
 
