@@ -28,5 +28,15 @@ parts = boxBucketing(boxes)
 
 
 
+function larFromLines(datafile)
+	V = reshape(datafile',(size(datafile',1)÷2,size(datafile',2)*2))
+	len = length(datafile)
+	EV = collect(reshape(1:(len÷2), 2,(len÷4)))
+	W,EW = lines2lar((V,EV))
+	chains = boundary(W,EW)
+	operator = boundaryOp(EW,chains)
+	FW = [sort(collect(Set(vcat([EW[:,abs(e)] for e in face]...)))) for face in chains]
+	W,FW,EW
+end
 
-
+larFromLines(datafile)

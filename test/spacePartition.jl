@@ -192,6 +192,20 @@ function intersectSegmentWithZero(p1::Array{Float64,1}, p2::Array{Float64,1})
 	return point
 end
 
+
+function larFromLines(datafile)
+	V = reshape(datafile',(size(datafile',1)÷2,size(datafile',2)*2))
+	len = length(datafile)
+	EV = collect(reshape(1:(len÷2), 2,(len÷4)))
+	W,EW = lines2lar((V,EV))
+	chains = boundary(W,EW)
+	operator = boundaryOp(EW,chains)
+	FW = [sort(collect(Set(vcat([EW[:,abs(e)] for e in face]...)))) for face in chains]
+	W,FW,EW
+end
+
+
+
 function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1}, 
 						EV::Array{Int64,2},debug=false)
 	""" input: face index f; candidate incident faces F[f]; """
@@ -243,13 +257,10 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 			push!(line,Z[:,EZ[2,e]][1]); push!(line,Z[:,EZ[2,e]][2])
 			push!(lines,line)
 		end
-		lineArray = hcat(lines...)'
-		
-		
-		hcat(lines...)
-		
-		""" Remove external vertices """
-		
+		lineArray = hcat(lines...)
+		W,FW,EW = larFromLines(lineArray')
+		if debug viewLarIndices(W,EW,FW,3) end
+				
 		""" Apply the inverse submanifold transform """
 		
 		""" Accumulate the submodel parts """
