@@ -183,6 +183,15 @@ function edgefilter(Z,EZ,e)
 	return crossZero( Z, EZ[:,e] ) # | ( out(EZ[1,e]) $ out(EZ[1,e] )) 
 end
 
+function intersectSegmentWithZero(p1::Array{Float64,1}, p2::Array{Float64,1})
+	x1,y1,z1 = p1
+	x2,y2,z2 = p2
+	# z = z1 + alpha(z2 - z1)
+	alpha_0 = (0 - z1)/(z2 - z1)
+	point = Float64[x1 + alpha_0*(x2 - x1) , y1 + alpha_0*(y2 - y1)]
+	return point
+end
+
 function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1}, 
 						EV::Array{Int64,2},debug=false)
 	""" input: face index f; candidate incident faces F[f]; """
@@ -216,7 +225,28 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 		ez = hcat([EZ[:,e] for e in EW]...)
 		if debug visualize(Z,FZ,ez,pivot) end
 
-		""" for each face in EW, computation of the aligned set of points p(z=0) """
+		""" for each face in EW, computate the aligned set of points p(z=0) """
+		lines = Array{Array{Float64,1},1}()
+		for face in edges
+			assert(length(face)==2) # may fail with non convex faces TODO: make general
+			line = Array{Float64,1}()
+			for e in face
+				v1,v2 = EZ[:,e]
+				px,py = intersectSegmentWithZero(Z[:,v1],Z[:,v2])
+				push!(line,px); push!(line,py)
+			end
+			push!(lines,line)
+		end
+		for e in pivotEdges
+			line = Array{Float64,1}()
+			push!(line,Z[:,EZ[1,e]][1]); push!(line,Z[:,EZ[1,e]][2])
+			push!(line,Z[:,EZ[2,e]][1]); push!(line,Z[:,EZ[2,e]][2])
+			push!(lines,line)
+		end
+		lineArray = hcat(lines...)'
+		
+		
+		hcat(lines...)
 		
 		""" Remove external vertices """
 		
