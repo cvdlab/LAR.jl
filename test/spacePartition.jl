@@ -179,6 +179,9 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Int64,2}, EV::Array{Int64
 	out = spacePartition(V,FW,EV,debug)
 end
 
+function edgefilter(Z,EZ,e)
+	return crossZero( Z, EZ[:,e] ) # | ( out(EZ[1,e]) $ out(EZ[1,e] )) 
+end
 
 function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1}, 
 						EV::Array{Int64,2},debug=false)
@@ -188,7 +191,7 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 	FE = crossRelation(FV,EV)
 	
 	for (f,F) in enumerate(buckets)
-		@show (f,F)
+		# @show (f,F)
 		""" F[f] submodel extraction from (V,FV,EV) """
 		Z,FZ,EZ,pivot = subModel(V,FV,EV,F,f,FE)
 		if debug visualize(Z,FZ,EZ,pivot) end
@@ -204,38 +207,16 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 		
 		""" filtering of EW edges traversing z=0, """
 		fe = crossRelation(FZ,EZ)
-		edges4face = [[EZ[:,e] for e in face] for (k,face) in enumerate(fe) if k!=pivot]
-		dangling = [[vpair for vpair in edges if meetZero( Z, vpair )] 
-					for edges in edges4face]
-		single = Set(vcat([p.AA(sort)(pairs) for pairs in dangling if pairs!=[]]...))
-		vpairs = collect(single)
-		crossing = [[vpair for vpair in edges if crossZero( Z, vpair )] 
-					for edges in edges4face]
-		singlecross = Set(vcat([p.AA(sort)(pairs) for pairs in crossing if pairs!=[]]...))
-		vpairscross = collect(singlecross)
+		edges4face = [[e for e in face] for (k,face) in enumerate(fe) if k!=pivot]
 		
-		""" select pivot edges and 1D Lar model """
 		pivotEdges = fe[pivot]
-		v,ev = Z,[EZ[:,k] for k in pivotEdges]
-		@show v
-		@show ev
+		crossingEdges = [[e for e in edges if edgefilter(Z,EZ,e)] for edges in edges4face]
+		edges = [edgeList for edgeList in crossingEdges if edgeList!=[]]
+		EW = vcat(edges...,pivotEdges...)
+		ez = hcat([EZ[:,e] for e in EW]...)
+		if debug visualize(Z,FZ,ez,pivot) end
 
-		""" Remove non-pivot vpairs with both external vertices """
-		classify = pointInPolygonClassification(v[1:2,:],ev)
-		function out(vk) 
-			println("\neccomi")
-			@show Z[1:2,vk], vk
-			
-			flag = classify(Z[1:2,vk])
-			println(classify(Z[1:2,vk]))
-			return flag != "p_out"
-		end
-		edges = [[v1,v2] for (v1,v2) in vpairs if (out(v1) | out(v2))]
-		edges = hcat(vcat(edges,vpairscross)...)
-		if debug visualize(Z,FZ,edges,pivot) end
-
-		""" for each face in FZEZ, computation of the aligned set of points p(z=0) """
-		
+		""" for each face in EW, computation of the aligned set of points p(z=0) """
 		
 		""" Remove external vertices """
 		
@@ -248,5 +229,6 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 	""" return the **valid** `LAR` 2-skeleton model `(W,FW,EW)` """
 end
 
+#ef = crossRelation(EZ,FZ)
 
 V,FV,EV = deepcopy((X,FX,EX))
