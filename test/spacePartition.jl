@@ -193,7 +193,7 @@ function intersectSegmentWithZero(p1::Array{Float64,1}, p2::Array{Float64,1})
 end
 
 
-function larFromLines(datafile)
+function larFromLines(datafile) # or lineArray
 	V = reshape(datafile',(size(datafile',1)÷2,size(datafile',2)*2))
 	len = length(datafile)
 	EV = collect(reshape(1:(len÷2), 2,(len÷4)))
@@ -205,6 +205,19 @@ function larFromLines(datafile)
 end
 
 
+function remap(W,FW,EW)
+	W,close,clusters,vmap = p.pruneVertices(W')	
+	if typeof(W) == Array{Any,1} 
+		W = Array{Float64,2}(hcat(W...))
+	else 
+		W = Array{Float64,2}(W')
+	end
+	vmap = vmap + 1
+	EW = [[vmap[EW[1,k]],vmap[EW[2,k]]] for k in 1:size(EW,2)]
+	FW = [[vmap[FW[k][h]] for h=1:length(FW[k])] for k=1:length(FW)]
+	EW = hcat(EW...)
+end
+
 
 function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1}, 
 						EV::Array{Int64,2},debug=false)
@@ -212,6 +225,11 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 	boxes = lar2boxes(V,FV)
 	buckets = boxBucketing(boxes)
 	FE = crossRelation(FV,EV)
+
+	Vertices = Array{Float64,2}()
+	Edges = Array{Int64,2}()
+	Faces = Array{Array{Int64,1},1}()
+	nverts = 0
 	
 	for (f,F) in enumerate(buckets)
 		# @show (f,F)
@@ -262,14 +280,36 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 		if debug viewLarIndices(W,EW,FW,3) end
 				
 		""" Apply the inverse submanifold transform """
+		W1 = vcat(W,zeros((1,size(W,2))),ones((1,size(W,2))))
+		Y = inv(M) * W1
+		Z = Y[ 1:3, : ]
+		if debug viewLarIndices(Z,EW,FW,3) end
 		
 		""" Accumulate the submodel parts """
-		
+		n = size(Z,2)
+		@show f
+		if f==1
+			Vertices = copy(Z)
+			Edges = copy(EW)
+			Faces = copy(FW)
+			nverts = n
+		else
+			Vertices = hcat(Vertices,copy(Z))
+			Edges = hcat(Edges,copy(EW)+nverts)
+			Faces = vcat(Faces,copy(FW)+nverts)
+			nverts += n
+		end
 	end
-	
+	return Vertices,Faces,Edges
 	""" return the **valid** `LAR` 2-skeleton model `(W,FW,EW)` """
+	U,FU,EU = remap(W,FW,EW)
 end
 
-#ef = crossRelation(EZ,FZ)
+
 
 V,FV,EV = deepcopy((X,FX,EX))
+W,FW,EW = spacePartition(V,FV,EV)
+viewexploded(W,EW)
+viewexploded(W,FW)
+
+

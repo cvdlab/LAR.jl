@@ -2,7 +2,7 @@ using LAR
 using IntervalTrees
 include("src/inters.jl")
 
-v,(vv,ev,fv,cv) = p.larCuboids((10,10,1),true)
+v,(vv,ev,fv,cv) = p.larCuboids((3,3,1),true)
 V = hcat([Array{Float64,1}(v[k,:]) for k=1:size(v,1)]...)
 FV = hcat([Array{Int64,1}(fv[k,:]+1) for k=1:size(fv,1)]...)
 EV = hcat([Array{Int64,1}(ev[k,:]+1) for k=1:size(ev,1)]...)
