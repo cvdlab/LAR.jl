@@ -213,9 +213,11 @@ function remap(W,FW,EW)
 		W = Array{Float64,2}(W')
 	end
 	vmap = vmap + 1
-	EW = [[vmap[EW[1,k]],vmap[EW[2,k]]] for k in 1:size(EW,2)]
-	FW = [[vmap[FW[k][h]] for h=1:length(FW[k])] for k=1:length(FW)]
+	EW = [sort([vmap[EW[1,k]],vmap[EW[2,k]]]) for k in 1:size(EW,2)]
+	EW = collect(Set([EW[k] for k=1:length(EW)]))
 	EW = hcat(EW...)
+	FW = [sort([vmap[FW[k][h]] for h=1:length(FW[k])]) for k=1:length(FW)]
+	FW = collect(Set([FW[k] for k=1:length(FW)]))
 	return W,FW,EW
 end
 
