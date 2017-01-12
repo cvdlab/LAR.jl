@@ -2,26 +2,30 @@ using LAR
 using IntervalTrees
 include("src/inters.jl")
 
-v,(vv,ev,fv,cv) = p.larCuboids((10,10,1),true)
+v,(vv,ev,fv,cv) = p.larCuboids((3,3,1),true)
 V = hcat([Array{Float64,1}(v[k,:]) for k=1:size(v,1)]...)
 FV = hcat([Array{Int64,1}(fv[k,:]+1) for k=1:size(fv,1)]...)
-model1 = Any[V,FV]
+EV = hcat([Array{Int64,1}(ev[k,:]+1) for k=1:size(ev,1)]...)
+model1 = Any[V,FV,EV]
 
 W = hcat([V[:,k] + [.5;.5;.5] for k=1:size(V,2)]...)
 FW = copy(FV)
-model2 = Any[W,FW]
+EW = copy(EV)
+model2 = Any[W,FW,EW]
 
 function cmerge(models)
 	V = hcat([models[k][1] for k=1:length(models)]...)
 	shifts = [0]
 	append!(shifts, [size(models[h][1],2) for h in 1:length(models)])
 	FV = hcat([models[k][2]+shifts[k] for k=1:length(models)]...)
-	return V,FV
+	EV = hcat([models[k][3]+shifts[k] for k=1:length(models)]...)
+	return V,FV,EV
 end
 
 models = [model1,model2]
-X,FX = cmerge(models)
+X,FX,EX = cmerge(models)
 viewexploded(X,FX)
+viewexploded(X,EX)
 
 boxes = lar2boxes(X,FX)
 buckets = boxBucketing(boxes)
@@ -91,7 +95,8 @@ cell = 53
 Z,EZ,FZ = boxes3lar(lar2boxes(X,[FX[:,f] for f in buckets[cell]]))
 pivot = p.COLOR(p.RED)(p.JOIN(lar2hpc(boxes3lar(boxes[:,cell])[1:2]...)))
 bucket = lar2hpc(Z,FZ)
-p.VIEW(p.STRUCT([glass(bucket),pivot]))
+bucketEdges = lar2hpc(Z,EZ)
+p.VIEW(p.STRUCT([glass(bucket),bucketEdges,pivot]))
 
 
 function submanifoldMapping(V::Array{Float64,2},FV::Array{Int64,2},pivotFace)
@@ -107,7 +112,11 @@ function submanifoldMapping(V::Array{Float64,2},FV::Array{Array{Int64,1},1},pivo
     normal = normalize(p.COVECTOR(facet)[2:end])
     a = normal
     b = Float64[0,0,1]
-    axis = normalize(cross(a,b))
+    if a!=b 
+    	axis = normalize(cross(a,b))
+    else
+    	axis = b
+    end
     angle = atan2(norm(cross(a,b)), dot(a,b))    
     # general 3D rotation (Rodrigues' rotation formula)    
     M = eye(4)
@@ -120,7 +129,7 @@ function submanifoldMapping(V::Array{Float64,2},FV::Array{Array{Int64,1},1},pivo
           u[2]*u[1]    u[2]*u[2]    u[2]*u[3] ;
           u[3]*u[1]    u[3]*u[2]    u[3]*u[3] ]
     M[1:3,1:3] = Cos*I + Sin*Ux + (1.0-Cos)*UU
-    transform = M * T
+    transform = M *  T
     return transform
 end
 
@@ -128,9 +137,12 @@ M = submanifoldMapping(X,FX,cell)
 ZZ = vcat(Z,ones((1,size(Z,2))))
 Y = M*ZZ
 bucket = lar2hpc(Y[1:3,1:size(Z,2)],FZ)
-W,EW,FW = boxes3lar(boxes[:,cell])
-WW = vcat(W,ones((1,size(W,2))))
-Y = M*WW
-pivot = p.COLOR(p.RED)(p.JOIN(lar2hpc(Y[1:3,1:size(W,2)],FW)))
-p.VIEW(p.STRUCT([glass(bucket),pivot]))
+bucketEdges = lar2hpc(Y[1:3,1:size(Z,2)],EZ)
+w,ew,fw = boxes3lar(boxes[:,cell])
+ww = vcat(w,ones((1,size(w,2))))
+y = M * ww
+pivot = p.COLOR(p.RED)(p.JOIN(lar2hpc(y[1:3,1:size(w,2)],fw)))
+p.VIEW(p.STRUCT([glass(bucket),bucketEdges,pivot]))
+
+
 
