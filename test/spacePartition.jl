@@ -216,6 +216,7 @@ function remap(W,FW,EW)
 	EW = [[vmap[EW[1,k]],vmap[EW[2,k]]] for k in 1:size(EW,2)]
 	FW = [[vmap[FW[k][h]] for h=1:length(FW[k])] for k=1:length(FW)]
 	EW = hcat(EW...)
+	return W,FW,EW
 end
 
 
@@ -300,9 +301,8 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 			nverts += n
 		end
 	end
-	return Vertices,Faces,Edges
 	""" return the **valid** `LAR` 2-skeleton model `(W,FW,EW)` """
-	U,FU,EU = remap(W,FW,EW)
+	U,FU,EU = remap(Vertices,Faces,Edges)
 end
 
 
@@ -311,5 +311,24 @@ V,FV,EV = deepcopy((X,FX,EX))
 W,FW,EW = spacePartition(V,FV,EV)
 viewexploded(W,EW)
 viewexploded(W,FW)
+
+FE = crossRelation(FW,EW)
+boundaryTriangulation(W,FW,EW,FE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
