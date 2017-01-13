@@ -2,13 +2,13 @@ using LAR
 using IntervalTrees
 include("src/inters.jl")
 
-v,(vv,ev,fv,cv) = p.larCuboids((3,3,1),true)
+v,(vv,ev,fv,cv) = p.larCuboids((1,1,1),true)
 V = hcat([Array{Float64,1}(v[k,:]) for k=1:size(v,1)]...)
 FV = hcat([Array{Int64,1}(fv[k,:]+1) for k=1:size(fv,1)]...)
 EV = hcat([Array{Int64,1}(ev[k,:]+1) for k=1:size(ev,1)]...)
 model1 = Any[V,FV,EV]
 
-W = hcat([V[:,k] + [.5;.5;0.5] for k=1:size(V,2)]...)
+W = hcat([V[:,k] + [.5;.5;0.] for k=1:size(V,2)]...)
 FW = copy(FV)
 EW = copy(EV)
 model2 = Any[W,FW,EW]
@@ -91,7 +91,7 @@ end
 params = PyObject(pyeval("list([1.,0.,0.,0.1,  0.,1.,0.,0.1,  0.,0.,1.,0.1, 0.,0.,0.,0.1, 100.])"))
 glass = p.MATERIAL(params)
 
-cell = 53
+cell = 11
 Z,EZ,FZ = boxes3lar(lar2boxes(X,[FX[:,f] for f in buckets[cell]]))
 pivot = p.COLOR(p.RED)(p.JOIN(lar2hpc(boxes3lar(boxes[:,cell])[1:2]...)))
 bucket = lar2hpc(Z,FZ)
