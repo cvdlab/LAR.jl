@@ -8,7 +8,7 @@ FV = hcat([Array{Int64,1}(fv[k,:]+1) for k=1:size(fv,1)]...)
 EV = hcat([Array{Int64,1}(ev[k,:]+1) for k=1:size(ev,1)]...)
 model1 = Any[V,FV,EV]
 
-W = hcat([V[:,k] + [.5;.5;.5] for k=1:size(V,2)]...)
+W = hcat([V[:,k] + [.5;.5;0.5] for k=1:size(V,2)]...)
 FW = copy(FV)
 EW = copy(EV)
 model2 = Any[W,FW,EW]

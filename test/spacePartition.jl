@@ -119,7 +119,8 @@ function subModel(V::Array{Float64,2}, FV::Array{Int64,2}, EV::Array{Int64,2},
 end
 
 function subModel(V::Array{Float64,2}, FV::Array{Array{Int64,1},1}, 
-					EV::Array{Int64,2},bucket::Array{Int64,1},f::Int64, FE::Array{Array{Int64,1},1})
+					EV::Array{Int64,2},bucket::Array{Int64,1},f::Int64, 
+					FE::Array{Array{Int64,1},1})
 	FW = [FV[f] for f in bucket]
 	EW = hcat(collect(Set([EV[:,e] for f in bucket for e in FE[f]]))...)
 
@@ -267,15 +268,15 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 			line = Array{Float64,1}()
 			for e in face
 				v1,v2 = EZ[:,e]
-				px,py = intersectSegmentWithZero(Z[:,v1],Z[:,v2])
+				px,py = vcode(intersectSegmentWithZero(Z[:,v1],Z[:,v2]))[1:2]
 				push!(line,px); push!(line,py)
 			end
 			push!(lines,line)
 		end
 		for e in pivotEdges
 			line = Array{Float64,1}()
-			push!(line,Z[:,EZ[1,e]][1]); push!(line,Z[:,EZ[1,e]][2])
-			push!(line,Z[:,EZ[2,e]][1]); push!(line,Z[:,EZ[2,e]][2])
+			push!(line,vcode(Z[:,EZ[1,e]])[1]); push!(line,vcode(Z[:,EZ[1,e]])[2])
+			push!(line,vcode(Z[:,EZ[2,e]])[1]); push!(line,vcode(Z[:,EZ[2,e]])[2])
 			push!(lines,line)
 		end
 		lineArray = hcat(lines...)
