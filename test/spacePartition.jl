@@ -281,6 +281,7 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 		end
 		lineArray = hcat(lines...)
 		W,FW,EW = larFromLines(lineArray')
+		
 		if debug viewLarIndices(W,EW,FW,3) end
 				
 		""" Apply the inverse submanifold transform """

@@ -53,8 +53,7 @@ V = larDict["V"];
 FV = larDict["FV"];
 v,ev = p.larFacets((V,FV),2);
 viewexploded(v',(ev+1)')
-ev = Any[ev[k,:]+1 for k=1:size(ev,1)]
-viewLarIndices(v',ev)
+viewLarIndices(v',(ev+1)')
 ```
 
 
