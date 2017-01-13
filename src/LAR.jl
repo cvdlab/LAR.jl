@@ -577,11 +577,12 @@ end
 # Produce an indexed view of Lar model (W,EW,FW)
 function viewLarIndices(W::Array{Float64,2},EW::Array{Int64,2},FW::Array{Int64,2},unit=1.0)
 	EV = [EW[:,k] for k=1:size(FW,2)]
-	viewLarIndices(W,EV,FW)
+	return viewLarIndices(W,EV,FW,unit)
 end
 
 # Produce an indexed view of Lar model (W,EW,FW)
-function viewLarIndices(W::Array{Float64,2},EW::Array{Int64,2},,FW::Array{Array{Int64,1},unit=1.0)
+function viewLarIndices(W::Array{Float64,2},EW::Array{Int64,2},FW::Array{Array{Int64,1},1}, 
+						unit=1.0)
 	EW = cols2any(EW)
 	function convertData(W,EW)
 		# Shifted vertices
