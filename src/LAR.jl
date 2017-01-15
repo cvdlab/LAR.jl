@@ -618,9 +618,9 @@ function viewLarIndices(W::Array{Float64,2},EW::Array{Int64,2},FW::Array{Array{I
 end
 
 
-include("src/inters.jl")
-include("src/boundary.jl")
-include("src/integr.jl")
+include("inters.jl")
+include("boundary.jl")
+include("integr.jl")
 
 # end # module LAR
 end
