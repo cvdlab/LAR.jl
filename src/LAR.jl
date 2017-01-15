@@ -1,4 +1,4 @@
-# module Lar-core
+module LAR
 # basic implementation of lar-core.jl module
 
 using JSON
@@ -613,7 +613,10 @@ function viewLarIndices(W::Array{Float64,2},EW::Array{Int64,2},FW::Array{Array{I
 end
 
 
-# end # module Lar-core
-include("src/inters.jl")
-include("test/boundary.jl")
-include("src/integr.jl")
+include("inters.jl")
+include("../test/boundary.jl")
+include("integr.jl")
+
+# end # module LAR
+end
+end
