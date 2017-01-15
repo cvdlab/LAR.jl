@@ -1,5 +1,3 @@
-#=	Biconnected components of a 1-complex.
-An implementation of the Hopcroft-Tarjan algorithm~\cite{Hopcroft:1973:AEA:362248.362272} for computation of the biconnected components of a graph is given here =#
 
 using LAR
 include("src/inters.jl")
@@ -21,14 +19,14 @@ chains = boundary(W,EW)
 operator = boundaryOp(EW,chains)
 #println(full(operator))
 FW = [sort(collect(Set(vcat([EW[:,abs(e)] for e in face]...)))) for face in chains]
-viewLarIndices(W,EW,FW,0.5)
+viewLarIndices(W,EW,FW,0.75)
 
 boxes = lar2boxes(W,FW)
 parts = boxBucketing(boxes)
 
 
 
-function larFromLines(datafile)
+function larFromLines(datafile) # lineArray
 	V = reshape(datafile',(size(datafile',1)÷2,size(datafile',2)*2))
 	len = length(datafile)
 	EV = collect(reshape(1:(len÷2), 2,(len÷4)))
@@ -39,4 +37,38 @@ function larFromLines(datafile)
 	W,FW,EW
 end
 
-larFromLines(datafile)
+V,FV,EV = larFromLines(datafile)
+
+
+
+function chainAreas(V::Array{Float64,2},EV::Array{Int64,2},chains::Array{Int64,2})
+	FE = [chains[:,f] for f=1:size(chains,2)]
+	return chainAreas(V,EV,FE)
+end
+
+
+""" Implementation using integr.jl """
+function chainAreas(V::Array{Float64,2}, EV::Array{Int64,2}, 
+				chains::Array{Array{Int64,1},1})
+V = vcat(V,zeros(1,size(V,2)))
+pivots = [EV[:,abs(chain[1])][1] for chain in chains]
+out = zeros(length(pivots))
+for k=1:length(chains)
+	area = 0
+	triangles = [[] for h=1:length(chains[k])]
+	for h=1:length(chains[k])
+		edge = chains[k][h]
+		v1,v2 = EV[:,abs(edge)]
+		if sign(edge) == -1
+			v1,v2=v2,v1
+		end
+		triangles[h] = Int[pivots[k],v1,v2]
+	end
+	P = V,triangles
+	out[k] = surface(P,true)
+end
+return out
+end
+
+
+chainAreas(V,EV,chains)

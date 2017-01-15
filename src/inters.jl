@@ -1,6 +1,6 @@
 # Test data
 # using LAR
-
+using IntervalTrees
 
 # Rounding of vectors to a given number of significant digits
 vcode(v::Verts,prec=10^8) = zeros!(map(round, v*prec)/prec)

@@ -182,3 +182,16 @@ function boundaryOp(EV::Array{Int64,2}, chains::Array{Array{Int64,1},1})
 end
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
