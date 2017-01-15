@@ -612,3 +612,6 @@ end
 
 
 # end # module Lar-core
+include("src/inters.jl")
+include("test/boundary.jl")
+include("src/integr.jl")

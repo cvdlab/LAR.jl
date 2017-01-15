@@ -16,9 +16,9 @@ function TT(tau::Array{Float64,2}, alpha, beta, gamma, signedInt=false)
 	a = va - vo
 	b = vb - vo
 	s1 = 0.0
-	for h=0:(alpha)
-		for k=0:(beta)
-			for m=0:(gamma)
+	for h=0:alpha
+		for k=0:beta
+			for m=0:gamma
 				s2 = 0.0
 				for i=0:h 
 					s3 = 0.0
@@ -104,48 +104,48 @@ end
 
 
 """ Surface and volume integrals """
-function surface(P, signedInt=false)
+function Surface(P, signedInt=false)
     return II(P, 0, 0, 0, signedInt)
 end
 
-function volume(P)
+function Volume(P)
     return III(P, 0, 0, 0)
 end
 
-v,(vv,ev,fv,cv) = p.larCuboids((1,1,1),true)
-V = hcat([Array{Float64,1}(v[k,:]) for k=1:size(v,1)]...)
-FV = hcat([Array{Int64,1}(fv[k,:]+1) for k=1:size(fv,1)]...)
-EV = hcat([Array{Int64,1}(ev[k,:]+1) for k=1:size(ev,1)]...)
-model1 = Any[V,FV,EV]
-P = V,[FV[:,k] for k=1:size(FV,2)]
-surface(P,false)
-
-
-""" Surface integration """
-function surfIntegration(larModel)
-    V,FV,EV = model
-    FE = crossRelation(FV,EV)
-    if typeof(FV) == Array{Int64,2}
-    	FV = [FV[:,k] for k=1:size(FV,2)]
-    end
-    if typeof(V) == Array{Int64,2}
-    	if size(V,1) == 2
-    		V = vcat(V,zeros(1,size(V,2)))
-    	end
-    end
-    cochain = []
-    triangles = []
-    faceVertPairs = []
-	for face=1:length(FE)
-		push!(faceVertPairs, hcat([EV[:,e] for e in FE[face]]...))
-		row = [faceVertPairs[face][1] for k=1:length(FE[face])]
-		push!(triangles, vcat(faceVertPairs[face],row'))
-        P = V,triangles[face]
-        area = surface(P,false) 
-        push!(cochain,area)
-    end
-    return cochain
-end
+#v,(vv,ev,fv,cv) = p.larCuboids((1,1,1),true)
+#V = hcat([Array{Float64,1}(v[k,:]) for k=1:size(v,1)]...)
+#FV = hcat([Array{Int64,1}(fv[k,:]+1) for k=1:size(fv,1)]...)
+#EV = hcat([Array{Int64,1}(ev[k,:]+1) for k=1:size(ev,1)]...)
+#model1 = Any[V,FV,EV]
+#P = V,[FV[:,k] for k=1:size(FV,2)]
+#surface(P,false)
+#
+#
+#""" Surface integration """
+#function surfIntegration(larModel)
+#    V,FV,EV = model
+#    FE = crossRelation(FV,EV)
+#    if typeof(FV) == Array{Int64,2}
+#    	FV = [FV[:,k] for k=1:size(FV,2)]
+#    end
+#    if typeof(V) == Array{Int64,2}
+#    	if size(V,1) == 2
+#    		V = vcat(V,zeros(1,size(V,2)))
+#    	end
+#    end
+#    cochain = []
+#    triangles = []
+#    faceVertPairs = []
+#	for face=1:length(FE)
+#		push!(faceVertPairs, hcat([EV[:,e] for e in FE[face]]...))
+#		row = [faceVertPairs[face][1] for k=1:length(FE[face])]
+#		push!(triangles, vcat(faceVertPairs[face],row'))
+#        P = V,triangles[face]
+#        area = surface(P,false) 
+#        push!(cochain,area)
+#    end
+#    return cochain
+#end
     
 #    TODO: after having implemented ∂_3/∂_2
 #def signedIntSurfIntegration(model,signedInt=False)
