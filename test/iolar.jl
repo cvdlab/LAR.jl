@@ -7,7 +7,7 @@ model = W,EW
 
 printLar("test/csv/test1", model)
 V,EV = readLar("test/csv/test1")
-view(V,EV)
+larview(V,EV)
 viewexploded(V,EV)
 
 EW = biconnectedComponents(V,EV)

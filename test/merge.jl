@@ -1,6 +1,6 @@
 using LAR
-using IntervalTrees
-include("src/inters.jl")
+using PyCall
+@pyimport larlib as p
 
 v,(vv,ev,fv,cv) = p.larCuboids((2,2,1),true)
 V = hcat([Array{Float64,1}(v[k,:]) for k=1:size(v,1)]...)

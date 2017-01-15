@@ -8,9 +8,8 @@
 # coordinates, and $(x2,y2)$ is the point of maximal  coordinates.
 
 using LAR
-include("src/inters.jl")
 
-view(randomLines(1000,0.1)...)
+larview(randomLines(1000,0.1)...)
 
 randomLineArray = randomLines(200,0.2);
 lines = lar2hpc(randomLineArray...);

@@ -85,14 +85,14 @@ println("V =\n",V)
 println("EV =\n",EV)
 println("EV1 =\n",EV1)
 
-methods(view)
+methods(larview)
 
 larmodel = p.larCuboids((2,2,2),true);
 verts,cells,chainbases = importmodel(larmodel);
-view(verts,cells.EV);
-view(verts,cells.FV);
-view(verts,cells.CV);
-view(verts,cells.VV);
+larview(verts,cells.EV);
+larview(verts,cells.FV);
+larview(verts,cells.CV);
+larview(verts,cells.VV);
 
 
 
@@ -119,16 +119,16 @@ mod1 = json2larmodel("""
 """)
 
 
-view(mod1.Verts,mod1.Lar.FV)
-view(mod2.Verts,rebase(mod2.Lar.FV))
-view(        embed(mod2.Verts),rebase(mod2.Lar.FV))
+larview(mod1.Verts,mod1.Lar.FV)
+larview(mod2.Verts,rebase(mod2.Lar.FV))
+larview(        embed(mod2.Verts),rebase(mod2.Lar.FV))
 viewexploded(mod2.Verts,rebase(mod2.Lar.FV))
 
 
 
 larmodel = p.larCuboids((1,1));
 (v,fv)=larmodel;
-view(translate(v',[0.5; 0.5]),rebase(fv))
+larview(translate(v',[0.5; 0.5]),rebase(fv))
 
 larmodel = p.larCuboids((2,2,2));
 (v,cv)=larmodel;

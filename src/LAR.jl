@@ -2,10 +2,15 @@ module LAR
 # basic implementation of lar-core.jl module
 
 using JSON
-
 using PyCall
-
 @pyimport larlib as p
+
+export larview,viewexploded,viewLarIndices,lar2hpc,cellComplex
+export lines2lar,larFromLines,larModelCheck,boxBucketing,lar2boxes,
+randomLines,vcode
+export boundary,boundaryOp
+export Surface,Volume,chainAreas
+ 
 
 using IntervalTrees
 
@@ -244,30 +249,30 @@ function lar2hpc(V::Array{Float64,2}, EV::Array{Int64,2})
 end
 
 # visualize an HPC value from a Julia pair (Verts,Cells)
-function view(V::Array{Float64,2}, EV::Array{Int64,2})
+function larview(V::Array{Float64,2}, EV::Array{Int64,2})
 	p.VIEW(lar2hpc(V,EV))
 end
 
 # visualize an HPC value from a Julia pair (Verts,Cells)
-function view(V::Array{Float64,2}, EV::Array{Any,2})
+function larview(V::Array{Float64,2}, EV::Array{Any,2})
 	EV = map(Int64, EV)
-	view(V,EV)
+	larview(V,EV)
 end
 
 # visualize an HPC value from a Julia pair (Verts,Cells)
-function view(V::Array{Any,2}, EV::Array{Any,1})
+function larview(V::Array{Any,2}, EV::Array{Any,1})
 	a,b = PyObject(V'), PyObject(EV)
 	p.VIEW(p.MKPOL([a,b,1]))
 end
 
 
 # visualize an HPC value from a Julia pair (Verts,Cells)
-function view(V::Array{Float64,2}, EV::Array{Any,1})
+function larview(V::Array{Float64,2}, EV::Array{Any,1})
 	p.VIEW(lar2hpc(V,EV))
 end
 
 # visualize an HPC value from a Julia pair (Verts,Cells)
-function view(V::Array{Float64,2}, EV::Array{Array{Int64,1},1})
+function larview(V::Array{Float64,2}, EV::Array{Array{Int64,1},1})
 	a,b = PyObject(V'), PyObject(EV)
 	verts = PyObject(a[:tolist]())
 	cells = b
@@ -275,7 +280,7 @@ function view(V::Array{Float64,2}, EV::Array{Array{Int64,1},1})
 end
 
 # visualize an HPC value from a Julia pair (Verts,Cells)
-function view(V::Array{Any,2}, EV::Array{Any,2})
+function larview(V::Array{Any,2}, EV::Array{Any,2})
 	a,b = PyObject(V'), PyObject(EV')
 	verts = a
 	cells = b
@@ -613,10 +618,9 @@ function viewLarIndices(W::Array{Float64,2},EW::Array{Int64,2},FW::Array{Array{I
 end
 
 
-include("inters.jl")
-include("../test/boundary.jl")
-include("integr.jl")
+include("src/inters.jl")
+include("src/boundary.jl")
+include("src/integr.jl")
 
 # end # module LAR
-end
 end

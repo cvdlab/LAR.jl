@@ -1,8 +1,6 @@
 # Generation of lar model (V,EV) of a random set of 2D lines 
 
 using LAR
-include("src/inters.jl")
-
 
 
 V = [[0.,1] [1.,1] [-1,0] [2,0] [0,-1] [1,-1]]
@@ -10,7 +8,7 @@ EV = [[1,5] [2,6] [3,4]]
 lineArray = V,EV
 lineFrags = lineIntersection(lineArray)
 W,EW = lines2lar(lineArray)
-view(W,EW)
+larview(W,EW)
 viewexploded(W,EW)
 
 

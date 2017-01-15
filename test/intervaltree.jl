@@ -25,9 +25,9 @@ end
 
 lineArray = randomLines(600,.3)
 
-view(lineArray...)
+larview(lineArray...)
 V,EV = lines2lar(lineArray)
-view(V,EV)
+larview(V,EV)
 chains = boundary(V,EV)
 operator = boundaryOp(EV,chains)
 FV = [sort(collect(Set(vcat([EV[:,abs(e)] for e in face]...)))) for face in chains]
@@ -35,7 +35,7 @@ viewLarIndices(V,EV,FV,0.1)
 
 boxes = lar2boxes(V,FV)
 W,EW,FW = boxes2lar(boxes)
-view(W,EW)
+larview(W,EW)
 
 
 buckets = boxBucketing(boxes)

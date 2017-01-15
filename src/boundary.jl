@@ -48,9 +48,9 @@ function nextPrev(edges::Array{Int64,1})
 	theNexts,thePrevs
 end
 
-function rowColIncidence(BND_1)
+function rowColIncidence(BND_1,n)
 	vs,es = findn(BND_1)
-	VE = [Int64[] for k=1:size(V,2)]
+	VE = [Int64[] for k=1:n]
 	for k in 1:length(vs)
 		push!(VE[vs[k]], es[k])
 	end
@@ -133,11 +133,11 @@ function cellTracking(BND_1,m,n,forwardBackward, V,EV, thecell,thesign)
 end
 
 
-function boundary(V,EV::Array{Int64,2})
+function boundary(V::Array{Float64,2},EV::Array{Int64,2})
 	BND_1 = boundary_1(EV)
 	m = size(BND_1,1)
 	n = size(BND_1,2)
-	VE = rowColIncidence(BND_1)
+	VE = rowColIncidence(BND_1,n)
 	forwardBackward = edgeSlopeOrdering(VE,V,EV)
 
 	out = Array{Int64,1}[]

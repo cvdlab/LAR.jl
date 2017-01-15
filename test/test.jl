@@ -12,5 +12,5 @@ for edge in chains[1]
 end
 EV = hcat(cycle...)
 
-view(V,EV)
+larview(V,EV)
 pointInPolygonClassification(V,EV)([200,300])
