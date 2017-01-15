@@ -5,7 +5,8 @@ using JSON
 using PyCall
 @pyimport larlib as p
 
-export larview,viewexploded,viewLarIndices,lar2hpc,cellComplex
+export larview,viewexploded,viewLarIndices,lar2hpc,cellComplex,
+json2larmodel,rebase
 export lines2lar,larFromLines,larModelCheck,boxBucketing,lar2boxes,
 randomLines,vcode
 export boundary,boundaryOp
