@@ -7,6 +7,8 @@ using PyCall
 
 @pyimport larlib as p
 
+using IntervalTrees
+
 # root of LAR type hierarchy
 abstract LarModel
 
