@@ -210,7 +210,9 @@ end
 """ Implementation using integr.jl """
 function chainAreas(V::Array{Float64,2}, EV::Array{Int64,2}, 
 				chains::Array{Array{Int64,1},1})
-	V = vcat(V,zeros(1,size(V,2)))
+	if size(V,1) == 2
+		V = vcat(V,zeros(1,size(V,2)))
+	end	
 	pivots = [EV[:,abs(chain[1])][1] for chain in chains]
 	out = zeros(length(pivots))
 	for k=1:length(chains)

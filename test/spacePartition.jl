@@ -281,6 +281,11 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 		lineArray = hcat(lines...)
 		W,FW,EW = larFromLines(lineArray')
 		
+		""" remove external cycle """
+		chains = boundary(W,EW)
+		areaPairing = chainAreas(W,EW,chains)
+		maxAreas = maximum([abs(area) for area in areaPairing])
+		FW = [face for (k,face) in enumerate(FW) if abs(areaPairing[k]) != maxAreas]
 		if debug viewLarIndices(W,EW,FW,3) end
 				
 		""" Apply the inverse submanifold transform """
@@ -312,6 +317,7 @@ end
 
 V,FV,EV = deepcopy((X,FX,EX))
 W,FW,EW = spacePartition(V,FV,EV)
+
 viewexploded(W,EW)
 viewexploded(W,FW)
 
