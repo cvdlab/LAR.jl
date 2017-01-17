@@ -199,7 +199,8 @@ function segmentIntersect(boxes,lineArray,lineStorage)
     function segmentIntersect0(h)
     	h1,h2 = EV[:,h]
         p1,p2 = V[:,h1],V[:,h2]
-        line1 = vcode([p1 p2])
+        #line1 = vcode([p1 p2])
+        line1 = [p1 p2]
         (x1,y1),(x2,y2) = p1,p2
         B1,B2,B3,B4 = boxes[:,h]
         function segmentIntersect1(k)
@@ -215,7 +216,7 @@ function segmentIntersect(boxes,lineArray,lineStorage)
                 v = p3-p1
                 a=m[1,1]; b=m[1,2]; c=m[2,1]; d=m[2,2]
                 det = a*d-b*c
-                if det != 0
+                if abs(det) > 10^-6. 
                     m_inv = inv(m)
                     alpha, beta = m_inv*v
                     if (-0.0<=alpha<=1.0) & (-0.0<=beta<=1.0)
@@ -236,12 +237,14 @@ function segmentIntersect(boxes,lineArray,lineStorage)
 end
 
 
+
 # Brute force intersection within the buckets
 function lineBucketIntersect(boxes,lineArray, h,bucket, lineStorage)
     intersect0 = segmentIntersect(boxes,lineArray,lineStorage)
     intersectionPoints = Array{Float64,1}[]
     intersect1 = intersect0(h)
     for line in bucket
+    	@show line
         point = intersect1(line)
         if point != nothing
             push!(intersectionPoints, vcode(point))
@@ -295,6 +298,7 @@ function lineIntersection(lineArray)
 	boxes = lar2boxes(lineArray...)
 	buckets = boxBucketing(boxes)
     for (h,bucket) in enumerate(buckets)
+    	@show h,bucket
         pointBucket = lineBucketIntersect(boxes,lineArray, h,bucket, lineStorage)
     end
     frags = keys(lineStorage)
