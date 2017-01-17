@@ -244,7 +244,7 @@ function lineBucketIntersect(boxes,lineArray, h,bucket, lineStorage)
     intersectionPoints = Array{Float64,1}[]
     intersect1 = intersect0(h)
     for line in bucket
-    	@show line
+    	#@show line
         point = intersect1(line)
         if point != nothing
             push!(intersectionPoints, vcode(point))
@@ -298,7 +298,7 @@ function lineIntersection(lineArray)
 	boxes = lar2boxes(lineArray...)
 	buckets = boxBucketing(boxes)
     for (h,bucket) in enumerate(buckets)
-    	@show h,bucket
+    	#@show h,bucket
         pointBucket = lineBucketIntersect(boxes,lineArray, h,bucket, lineStorage)
     end
     frags = keys(lineStorage)
