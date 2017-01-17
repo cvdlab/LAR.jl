@@ -199,8 +199,8 @@ function segmentIntersect(boxes,lineArray,lineStorage)
     function segmentIntersect0(h)
     	h1,h2 = EV[:,h]
         p1,p2 = V[:,h1],V[:,h2]
-        #line1 = vcode([p1 p2])
-        line1 = [p1 p2]
+        line1 = vcode([p1 p2])
+        #line1 = [p1 p2]
         (x1,y1),(x2,y2) = p1,p2
         B1,B2,B3,B4 = boxes[:,h]
         function segmentIntersect1(k)
@@ -385,6 +385,7 @@ function vertices2vertices(V,EV)
 	end
 	return VV
 end
+
 
 # Main procedure for biconnected components 
 function biconnectedComponents(W,EV)

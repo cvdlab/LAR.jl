@@ -222,6 +222,17 @@ function remap(W,FW,EW)
 	return W,FW,EW
 end
 
+function checkLines4equalPoints(lines)
+	out = []
+	for line in lines
+		if length(line) > 4
+			b = reshape(line,2,Int(length(line)/2))
+			line = vcat(p.pruneVertices(b')[1]...)
+		end
+		push!(out,line)
+	end
+	out
+end
 
 function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1}, 
 						EV::Array{Int64,2},debug=false)
@@ -264,7 +275,7 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 		""" for each face in EW, computate the aligned set of points p(z=0) """
 		lines = Array{Array{Float64,1},1}()
 		for face in edges
-			assert(length(face)==2) # may fail with non convex faces TODO: make general
+			#assert(length(face)==2) # may fail with non convex faces TODO: make general
 			line = Array{Float64,1}()
 			for e in face
 				v1,v2 = EZ[:,e]
@@ -279,6 +290,7 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 			push!(line,vcode(Z[:,EZ[2,e]])[1]); push!(line,vcode(Z[:,EZ[2,e]])[2])
 			push!(lines,line)
 		end
+		lines = checkLines4equalPoints(lines)
 		lineArray = hcat(lines...)
 		W,FW,EW = larFromLines(lineArray')
 		
