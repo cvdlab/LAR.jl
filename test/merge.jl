@@ -2,13 +2,13 @@ using LAR
 using PyCall
 @pyimport larlib as p
 
-v,(vv,ev,fv,cv) = p.larCuboids((2,2,1),true)
+v,(vv,ev,fv,cv) = p.larCuboids((4,4,1),true)
 V = hcat([Array{Float64,1}(v[k,:]) for k=1:size(v,1)]...)
 FV = hcat([Array{Int64,1}(fv[k,:]+1) for k=1:size(fv,1)]...)
 EV = hcat([Array{Int64,1}(ev[k,:]+1) for k=1:size(ev,1)]...)
 model1 = Any[V,FV,EV]
 
-W = hcat([V[:,k] + [.5;.5;0.] for k=1:size(V,2)]...)
+W = hcat([V[:,k] + [.5;0.;0.] for k=1:size(V,2)]...)
 FW = copy(FV)
 EW = copy(EV)
 model2 = Any[W,FW,EW]

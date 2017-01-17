@@ -180,7 +180,8 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Int64,2}, EV::Array{Int64
 end
 
 function edgefilter(Z,EZ,e)
-	return crossZero( Z, EZ[:,e] ) # | ( out(EZ[1,e]) $ out(EZ[1,e] )) 
+	out = crossZero(Z,EZ[:,e]) | ((abs(Z[3,EZ[1,e]])<10^-6.) $ (abs(Z[3,EZ[2,e]])<10^-6.)) 
+	return out
 end
 
 function intersectSegmentWithZero(p1::Array{Float64,1}, p2::Array{Float64,1})
@@ -235,7 +236,7 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 	nverts = 0
 	
 	for (f,F) in enumerate(buckets)
-		# @show (f,F)
+		#@show (f,F)
 		""" F[f] submodel extraction from (V,FV,EV) """
 		Z,FZ,EZ,pivot = subModel(V,FV,EV,F,f,FE)
 		if debug visualize(Z,FZ,EZ,pivot) end
@@ -283,9 +284,13 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 		
 		""" remove external cycle """
 		chains = boundary(W,EW)
-		areaPairing = chainAreas(W,EW,chains)
-		maxAreas = maximum([abs(area) for area in areaPairing])
-		FW = [face for (k,face) in enumerate(FW) if abs(areaPairing[k]) != maxAreas]
+		if length(chains) == 2
+			FW = [FW[1]]
+		else
+			areaPairing = chainAreas(W,EW,chains)
+			maxAreas = maximum([abs(area) for area in areaPairing])
+			FW = [face for (k,face) in enumerate(FW) if abs(areaPairing[k]) != maxAreas]
+		end
 		if debug viewLarIndices(W,EW,FW,3) end
 				
 		""" Apply the inverse submanifold transform """
@@ -296,7 +301,6 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 		
 		""" Accumulate the submodel parts """
 		n = size(Z,2)
-		@show f
 		if f==1
 			Vertices = copy(Z)
 			Edges = copy(EW)
@@ -321,8 +325,8 @@ W,FW,EW = spacePartition(V,FV,EV)
 viewexploded(W,EW)
 viewexploded(W,FW)
 
-FE = crossRelation(FW,EW)
-boundaryTriangulation(W,FW,EW,FE)
+#FE = crossRelation(FW,EW)
+#boundaryTriangulation(W,FW,EW,FE)
 
 
 
