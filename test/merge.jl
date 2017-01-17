@@ -9,6 +9,7 @@ EV = hcat([Array{Int64,1}(ev[k,:]+1) for k=1:size(ev,1)]...)
 model1 = Any[V,FV,EV]
 
 W = hcat([V[:,k] + [.5;0.;0.] for k=1:size(V,2)]...)
+W = rotate([0,0,π/6],W)
 FW = copy(FV)
 EW = copy(EV)
 model2 = Any[W,FW,EW]

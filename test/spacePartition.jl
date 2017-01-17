@@ -236,7 +236,7 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 	nverts = 0
 	
 	for (f,F) in enumerate(buckets)
-		#@show (f,F)
+		@show (f,F)
 		""" F[f] submodel extraction from (V,FV,EV) """
 		Z,FZ,EZ,pivot = subModel(V,FV,EV,F,f,FE)
 		if debug visualize(Z,FZ,EZ,pivot) end
