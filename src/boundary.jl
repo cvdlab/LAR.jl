@@ -146,6 +146,8 @@ function boundary(V::Array{Float64,2},EV::Array{Int64,2})
 	cell = 1
 	thesign = 1
 	while cell != 0
+		@show cell
+		
 		signedChain = cellTracking(BND_1,m,n,forwardBackward,V,EV, cell,thesign)
 		push!(out,signedChain)
 		# store the cells in signedChain

@@ -90,6 +90,20 @@ function pointInPolygonClassification(V,EV)
 end
 
 
+function crossRelation(EV::Array{Int64,2},FV::Array{Array{Int64,1},1})
+	sparseEV = cellComplex(EV)
+	sparseFV = cellComplex(FV)
+	sparseEF = (sparseFV' * sparseEV)'
+	I,J,V = findnz(sparseEF)
+	EF = [Int64[] for k=1:size(EV,2)]
+	for (i,j,v) in zip(I,J,V) 
+		if v==2
+			push!(EF[i],j)
+		end
+	end
+	return EF
+end
+
 function crossRelation(FV::Array{Int64,2},EV::Array{Int64,2})
 	FW = [FV[:,k] for k=1:size(FV,2)]
 	out = crossRelation(FW,EV)
