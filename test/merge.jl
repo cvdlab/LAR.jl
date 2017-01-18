@@ -2,17 +2,6 @@ using LAR
 using PyCall
 @pyimport larlib as p
 
-v,(vv,ev,fv,cv) = p.larCuboids((4,4,1),true)
-V = hcat([Array{Float64,1}(v[k,:]) for k=1:size(v,1)]...)
-FV = hcat([Array{Int64,1}(fv[k,:]+1) for k=1:size(fv,1)]...)
-EV = hcat([Array{Int64,1}(ev[k,:]+1) for k=1:size(ev,1)]...)
-model1 = Any[V,FV,EV]
-
-W = hcat([V[:,k] + [.5;0.5;0.] for k=1:size(V,2)]...)
-W = rotate([0,0,π/6],W)
-FW = copy(FV)
-EW = copy(EV)
-model2 = Any[W,FW,EW]
 
 function cmerge(models)
 	V = hcat([models[k][1] for k=1:length(models)]...)
@@ -22,14 +11,6 @@ function cmerge(models)
 	EV = hcat([models[k][3]+shifts[k] for k=1:length(models)]...)
 	return V,FV,EV
 end
-
-models = [model1,model2]
-X,FX,EX = cmerge(models)
-viewexploded(X,FX)
-viewexploded(X,EX)
-
-#boxes = lar2boxes(X,FX)
-#buckets = boxBucketing(boxes)
 
 function boxes2lar(boxes)
 	V = Array{Float64,1}[]
@@ -92,14 +73,6 @@ end
 params = PyObject(pyeval("list([1.,0.,0.,0.1,  0.,1.,0.,0.1,  0.,0.,1.,0.1, 0.,0.,0.,0.1, 100.])"))
 glass = p.MATERIAL(params)
 
-#cell = 11
-#Z,EZ,FZ = boxes3lar(lar2boxes(X,[FX[:,f] for f in buckets[cell]]))
-#pivot = p.COLOR(p.RED)(p.JOIN(lar2hpc(boxes3lar(boxes[:,cell])[1:2]...)))
-#bucket = lar2hpc(Z,FZ)
-#bucketEdges = lar2hpc(Z,EZ)
-#p.VIEW(p.STRUCT([glass(bucket),bucketEdges,pivot]))
-
-
 function submanifoldMapping(V::Array{Float64,2},FV::Array{Int64,2},pivotFace)
 	FW = [FV[:,k] for k=1:size(FV,2)]
 	return submanifoldMapping(V,FW,pivotFace)
@@ -134,16 +107,6 @@ function submanifoldMapping(V::Array{Float64,2},FV::Array{Array{Int64,1},1},pivo
     return transform
 end
 
-#M = submanifoldMapping(X,FX,cell)
-#ZZ = vcat(Z,ones((1,size(Z,2))))
-#Y = M*ZZ
-#bucket = lar2hpc(Y[1:3,1:size(Z,2)],FZ)
-#bucketEdges = lar2hpc(Y[1:3,1:size(Z,2)],EZ)
-#w,ew,fw = boxes3lar(boxes[:,cell])
-#ww = vcat(w,ones((1,size(w,2))))
-#y = M * ww
-#pivot = p.COLOR(p.RED)(p.JOIN(lar2hpc(y[1:3,1:size(w,2)],fw)))
-#p.VIEW(p.STRUCT([glass(bucket),bucketEdges,pivot]))
 
 
 

@@ -247,7 +247,7 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 	nverts = 0
 	
 	for (f,F) in enumerate(buckets)
-		#@show (f,F)
+		@show (f,F)
 		""" F[f] submodel extraction from (V,FV,EV) """
 		Z,FZ,EZ,pivot = subModel(V,FV,EV,F,f,FE)
 		if debug visualize(Z,FZ,EZ,pivot) end
@@ -328,19 +328,6 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 	""" return the **valid** `LAR` 2-skeleton model `(W,FW,EW)` """
 	U,FU,EU = remap(Vertices,Faces,Edges)
 end
-
-
-
-V,FV,EV = deepcopy((X,FX,EX))
-W,FW,EW = spacePartition(V,FV,EV)
-
-viewexploded(W,EW)
-viewexploded(W,FW)
-
-#FE = crossRelation(FW,EW)
-#boundaryTriangulation(W,FW,EW,FE)
-
-
 
 
 
