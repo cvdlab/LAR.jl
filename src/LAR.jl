@@ -592,7 +592,6 @@ end
 function viewLarIndices(W::Array{Float64,2},EW::Array{Int64,2},FW::Array{Array{Int64,1},1}, 
 						unit=1.0)
 	EW = cols2any(EW)
-	FW = FW+1
 	function convertData(W,EW)
 		# Shifted vertices
 		Z = zeros(length(W)+size(W,1))
