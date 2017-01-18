@@ -1,7 +1,7 @@
-using IntervalTrees
+#using IntervalTrees
 using LAR
-include("src/inters.jl")
-include("test/boundary.jl")
+#include("src/inters.jl")
+#include("test/boundary.jl")
 
 function boxes2lar(boxes)
 	V = Array{Float64,1}[]

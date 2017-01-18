@@ -13,7 +13,7 @@ viewexploded(W,EW)
 
 
 
-lineArray = randomLines(2000,0.2);
+lineArray = randomLines(200,0.4);
 V,EV = lines2lar(lineArray);
 hpcLines = lar2hpc(V,EV);
 marker = p.CIRCLE(.002)([3,1]);

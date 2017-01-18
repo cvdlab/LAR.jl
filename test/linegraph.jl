@@ -1,5 +1,5 @@
 using LAR
-include("src/inters.jl")
+#include("src/inters.jl")
 
 lineArray = randomLines(4000,0.1);
 V,EV = lines2lar(lineArray);
