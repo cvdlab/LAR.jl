@@ -236,6 +236,7 @@ function remap(W,FW,EW)
 	return W,FW,EW
 end
 
+
 function checkLines4equalPoints(lines)
 	out = []
 	for line in lines
@@ -247,6 +248,7 @@ function checkLines4equalPoints(lines)
 	end
 	out
 end
+
 
 function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1}, 
 						EV::Array{Int64,2},debug=false)

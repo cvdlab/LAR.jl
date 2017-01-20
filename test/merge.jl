@@ -73,12 +73,12 @@ end
 params = PyObject(pyeval("list([1.,0.,0.,0.1,  0.,1.,0.,0.1,  0.,0.,1.,0.1, 0.,0.,0.,0.1, 100.])"))
 glass = p.MATERIAL(params)
 
-function submanifoldMapping(V::Array{Float64,2},FV::Array{Int64,2},pivotFace)
+function submanifoldMapping(V::Array{Float64,2},FV::Array{Int64,2},pivotFace::Int64)
 	FW = [FV[:,k] for k=1:size(FV,2)]
 	return submanifoldMapping(V,FW,pivotFace)
 end
 
-function submanifoldMapping(V::Array{Float64,2},FV::Array{Array{Int64,1},1},pivotFace)
+function submanifoldMapping(V::Array{Float64,2},FV::Array{Array{Int64,1},1},pivotFace::Int64)
     tx,ty,tz = V[:,FV[pivotFace][1]]
     T = eye(4)
     T[1,4], T[2,4], T[3,4] = -tx,-ty,-tz
@@ -86,7 +86,7 @@ function submanifoldMapping(V::Array{Float64,2},FV::Array{Array{Int64,1},1},pivo
     normal = normalize(p.COVECTOR(facet)[2:end])
     a = normal
     b = Float64[0,0,1]
-    if a!=b 
+    if norm(cross(a,b)) != 0.0 
     	axis = normalize(cross(a,b))
     else
     	axis = b
