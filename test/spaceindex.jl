@@ -65,7 +65,7 @@ function splitting(boxes,nboxes,ncoords,bucket, finalBuckets,splittingStack,batc
 	k += 1	
 	k = k % ncoords == 0 ? ncoords : k % ncoords
 	threshold = ( sum(boxes[k,:])+sum(boxes[k+ncoords,:]) )/(2*nboxes)
-	@show threshold
+	#@show threshold
 	pre,into,post = [],[],[]
 	for h in theBucket
 		themin, themax = boxes[k,h], boxes[k+ncoords,h]
@@ -78,7 +78,7 @@ function splitting(boxes,nboxes,ncoords,bucket, finalBuckets,splittingStack,batc
 		end
 	end
 	current = Set(theBucket) 
-	@show p.AA(length)([pre,into,post])
+	#@show p.AA(length)([pre,into,post])
 	
 	appended = 0
 	if length(pre) <= batch

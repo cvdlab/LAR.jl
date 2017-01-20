@@ -106,8 +106,6 @@ end
 function larTriangulate(W::Array{Float64,2},FW::Array{Array{Int64,1},1},EW::Array{Int,2})
 	FE = crossRelation(FW,EW)
 	TW = Array{Array{Int64,2},1}()
-	println("\nlength(FW) = ",length(FW))
-	println("FW = ",FW)
 	for (f,face) in enumerate(FW)
 		# submanifold mapping and 2D projection
 		vs = hcat([W[:,v] for v in face]...)
