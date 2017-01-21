@@ -8,7 +8,8 @@ using PyCall
 export p,larview,viewexploded,viewLarIndices,lar2hpc,cellComplex,
 json2larmodel,rebase,rotate,scalate,scale
 export lines2lar,larFromLines,larModelCheck,boxBucketing,lar2boxes,
-randomLines,vcode,lineIntersection,lineBucketIntersect,segmentIntersect
+randomLines,vcode,lineIntersection,lineBucketIntersect,segmentIntersect,
+biconnectedComponents
 export boundary,boundaryOp
 export Surface,Volume,chainAreas
  

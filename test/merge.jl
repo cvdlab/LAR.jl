@@ -86,7 +86,7 @@ function submanifoldMapping(V::Array{Float64,2},FV::Array{Array{Int64,1},1},pivo
     normal = normalize(p.COVECTOR(facet)[2:end])
     a = normal
     b = Float64[0,0,1]
-    if norm(cross(a,b)) != 0.0 
+    if norm(cross(a,b)) < 10^-5. 
     	axis = normalize(cross(a,b))
     else
     	axis = b

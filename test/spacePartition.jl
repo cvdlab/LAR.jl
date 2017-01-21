@@ -187,11 +187,6 @@ function crossZero( Z, vpair )
     end
 end
 
-function spacePartition(V::Array{Float64,2}, FV::Array{Int64,2}, EV::Array{Int64,2},
-						debug=false)
-	FW = [FV[:,k] for k=1:size(FV,2)]
-	out = spacePartition(V,FW,EV,debug)
-end
 
 function edgefilter(Z,EZ,e)
 	out = crossZero(Z,EZ[:,e]) | ((abs(Z[3,EZ[1,e]])<10^-6.) $ (abs(Z[3,EZ[2,e]])<10^-6.)) 
@@ -207,17 +202,6 @@ function intersectSegmentWithZero(p1::Array{Float64,1}, p2::Array{Float64,1})
 	return point
 end
 
-
-function larFromLines(datafile) # or lineArray
-	V = reshape(datafile',(size(datafile',1)÷2,size(datafile',2)*2))
-	len = length(datafile)
-	EV = collect(reshape(1:(len÷2), 2,(len÷4)))
-	W,EW = lines2lar((V,EV))
-	chains = boundary(W,EW)
-	operator = boundaryOp(EW,chains)
-	FW = [sort(collect(Set(vcat([EW[:,abs(e)] for e in face]...)))) for face in chains]
-	W,FW,EW
-end
 
 
 function remap(W,FW,EW)
@@ -249,6 +233,11 @@ function checkLines4equalPoints(lines)
 	out
 end
 
+function spacePartition(V::Array{Float64,2}, FV::Array{Int64,2}, EV::Array{Int64,2},
+						debug=false)
+	FW = [FV[:,k] for k=1:size(FV,2)]
+	out = spacePartition(V,FW,EV,debug)
+end
 
 function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1}, 
 						EV::Array{Int64,2},debug=false)
@@ -263,7 +252,7 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 	nverts = 0
 	
 	for (f,F) in enumerate(buckets)
-		#@show (f,F)
+		@show (f,F)
 		""" F[f] submodel extraction from (V,FV,EV) """
 		Z,FZ,EZ,pivot = subModel(V,FV,EV,F,f,FE)
 		if debug visualize(Z,FZ,EZ,pivot) end
