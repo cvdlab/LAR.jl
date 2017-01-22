@@ -78,35 +78,50 @@ function submanifoldMapping(V::Array{Float64,2},FV::Array{Int64,2},pivotFace::In
 	return submanifoldMapping(V,FW,pivotFace)
 end
 
+#function submanifoldMapping(V::Array{Float64,2},FV::Array{Array{Int64,1},1},pivotFace::Int64)
+#    tx,ty,tz = V[:,FV[pivotFace][1]]
+#    T = eye(4)
+#    T[1,4], T[2,4], T[3,4] = -tx,-ty,-tz
+#    facet = [ V[:,v] - [tx,ty,tz] for v in FV[pivotFace] ]
+#    normal = normalize(p.COVECTOR(facet)[2:end])
+#    a = normal
+#    b = Float64[0,0,1]
+#    if norm(cross(a,b)) < 10^-5. 
+#    	axis = normalize(cross(a,b))
+#    else
+#    	axis = b
+#    end
+#    angle = atan2(norm(cross(a,b)), dot(a,b))    
+#    # general 3D rotation (Rodrigues' rotation formula)    
+#    M = eye(4)
+#    Cos, Sin = cos(angle), sin(angle)
+#    I, u = eye(3), axis
+#    Ux = [0        -u[3]      u[2];
+#          u[3]        0      -u[1];
+#         -u[2]      u[1]        0]
+#    UU = [u[1]*u[1]    u[1]*u[2]    u[1]*u[3] ;
+#          u[2]*u[1]    u[2]*u[2]    u[2]*u[3] ;
+#          u[3]*u[1]    u[3]*u[2]    u[3]*u[3] ]
+#    M[1:3,1:3] = Cos*I + Sin*Ux + (1.0-Cos)*UU
+#    transform = M *  T
+#    return transform
+#end
+
+
 function submanifoldMapping(V::Array{Float64,2},FV::Array{Array{Int64,1},1},pivotFace::Int64)
     tx,ty,tz = V[:,FV[pivotFace][1]]
     T = eye(4)
     T[1,4], T[2,4], T[3,4] = -tx,-ty,-tz
     facet = [ V[:,v] - [tx,ty,tz] for v in FV[pivotFace] ]
-    normal = normalize(p.COVECTOR(facet)[2:end])
-    a = normal
-    b = Float64[0,0,1]
-    if norm(cross(a,b)) < 10^-5. 
-    	axis = normalize(cross(a,b))
-    else
-    	axis = b
-    end
-    angle = atan2(norm(cross(a,b)), dot(a,b))    
-    # general 3D rotation (Rodrigues' rotation formula)    
-    M = eye(4)
-    Cos, Sin = cos(angle), sin(angle)
-    I, u = eye(3), axis
-    Ux = [0        -u[3]      u[2];
-          u[3]        0      -u[1];
-         -u[2]      u[1]        0]
-    UU = [u[1]*u[1]    u[1]*u[2]    u[1]*u[3] ;
-          u[2]*u[1]    u[2]*u[2]    u[2]*u[3] ;
-          u[3]*u[1]    u[3]*u[2]    u[3]*u[3] ]
-    M[1:3,1:3] = Cos*I + Sin*Ux + (1.0-Cos)*UU
+	centroid = p.CCOMB(PyObject(facet))
+	u1 = facet[1]-centroid
+	u2 = facet[2]-centroid
+	u3 = cross(u1,u2)
+	M = eye(4)
+	M[1:3,1:3] = inv([u1 u2 u3])
     transform = M *  T
     return transform
 end
-
 
 
 

@@ -69,8 +69,6 @@ end
 
 full(boundary_2(EW,FW))
 
-#boundaryTriangulation(W,FW,EW,FE)
-
 viewLarIndices(W,EW,FW,2)
 
 function edgeSlopeOrdering(VE,V,EV)
@@ -148,4 +146,4 @@ function boundary_3(W,EW,FW)
 end
 
 TW = larTriangulate(W,FW,EW)
-
+viewexploded(W,vcat(TW...)')

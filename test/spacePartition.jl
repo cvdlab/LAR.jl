@@ -35,13 +35,15 @@ end
 
 # Point in polygon classification #
 function pointInPolygonClassification(V,EV)
+	V = V[1:2,:]
     function pointInPolygonClassification0(pnt)
         x,y = pnt
         xmin,xmax,ymin,ymax = x,x,y,y
         tilecode = setTile([ymax,ymin,xmax,xmin])
         count,status = 0,0
     
-        for (k,edge) in enumerate(EV)
+        for k in size(EV,2)
+        	edge = EV[:,k]
             p1,p2 = V[:,edge[1]],V[:,edge[2]]
             (x1,y1),(x2,y2) = p1,p2
             c1,c2 = tilecode(p1),tilecode(p2)
@@ -189,7 +191,12 @@ end
 
 
 function edgefilter(Z,EZ,e)
-	out = crossZero(Z,EZ[:,e]) | ((abs(Z[3,EZ[1,e]])<10^-6.) $ (abs(Z[3,EZ[2,e]])<10^-6.)) 
+	cross = crossZero(Z,EZ[:,e])
+	side1 = (abs(Z[3,EZ[1,e]])<10^-6.)
+	side2 = (abs(Z[3,EZ[2,e]])<10^-6.)
+	@show cross,side1,side2
+	out = cross | (side1 $ side2) 
+	if out @show out end
 	return out
 end
 
@@ -231,6 +238,22 @@ function checkLines4equalPoints(lines)
 		push!(out,line)
 	end
 	out
+end
+
+function onlyOne_INorON_vertex(Z,pivotEdges,lines)
+	ev = hcat([EZ[:,e] for e in pivotEdges]...)
+	classify = pointInPolygonClassification(Z,ev)
+	out = Array{Array{Float64,1},1}()
+	for line in lines
+		p1,p2 = [line[1],line[2]],[line[3],line[4]]
+		code1 = classify(p1)
+		code2 = classify(p2)
+		@show code1,code2
+		if !((code1=="p_out") & (code2=="p_out")) 
+			push!(out,line) 
+		end
+	end
+	return out
 end
 
 function spacePartition(V::Array{Float64,2}, FV::Array{Int64,2}, EV::Array{Int64,2},
@@ -289,6 +312,10 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 			end
 			push!(lines,line)
 		end
+
+		""" Further filtering of lines with one non-external vertex """
+		lines = onlyOne_INorON_vertex(Z[1:2,:],pivotEdges,lines)
+
 		for e in pivotEdges
 			line = Array{Float64,1}()
 			push!(line,vcode(Z[:,EZ[1,e]])[1]); push!(line,vcode(Z[:,EZ[1,e]])[2])

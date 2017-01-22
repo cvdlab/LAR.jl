@@ -453,7 +453,7 @@ end
 
 
 
-function larFromLines(datafile) # lineArray
+function larFromLines(datafile) # lineArray'
 	V = reshape(datafile',(size(datafile',1)÷2,size(datafile',2)*2))
 	len = length(datafile)
 	EV = collect(reshape(1:(len÷2), 2,(len÷4)))
