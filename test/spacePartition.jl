@@ -194,9 +194,9 @@ function edgefilter(Z,EZ,e)
 	cross = crossZero(Z,EZ[:,e])
 	side1 = (abs(Z[3,EZ[1,e]])<10^-6.)
 	side2 = (abs(Z[3,EZ[2,e]])<10^-6.)
-	@show cross,side1,side2
+	#@show cross,side1,side2
 	out = cross | (side1 $ side2) 
-	if out @show out end
+	#if out @show out end
 	return out
 end
 
@@ -240,7 +240,7 @@ function checkLines4equalPoints(lines)
 	out
 end
 
-function onlyOne_INorON_vertex(Z,pivotEdges,lines)
+function onlyOne_INorON_vertex(Z,EZ,pivotEdges,lines)
 	ev = hcat([EZ[:,e] for e in pivotEdges]...)
 	classify = pointInPolygonClassification(Z,ev)
 	out = Array{Array{Float64,1},1}()
@@ -248,7 +248,7 @@ function onlyOne_INorON_vertex(Z,pivotEdges,lines)
 		p1,p2 = [line[1],line[2]],[line[3],line[4]]
 		code1 = classify(p1)
 		code2 = classify(p2)
-		@show code1,code2
+		#@show code1,code2
 		if !((code1=="p_out") & (code2=="p_out")) 
 			push!(out,line) 
 		end
@@ -314,7 +314,7 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 		end
 
 		""" Further filtering of lines with one non-external vertex """
-		lines = onlyOne_INorON_vertex(Z[1:2,:],pivotEdges,lines)
+		lines = onlyOne_INorON_vertex(Z,EZ,pivotEdges,lines)
 
 		for e in pivotEdges
 			line = Array{Float64,1}()

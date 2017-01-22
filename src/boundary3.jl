@@ -7,7 +7,7 @@ using PyCall
 @pyimport triangle
 
 
-v,(vv,ev,fv,cv) = p.larCuboids((2,2,1),true)
+v,(vv,ev,fv,cv) = p.larCuboids((2,2,2),true)
 V = hcat([Array{Float64,1}(v[k,:]) for k=1:size(v,1)]...)
 FV = hcat([Array{Int64,1}(fv[k,:]+1) for k=1:size(fv,1)]...)
 EV = hcat([Array{Int64,1}(ev[k,:]+1) for k=1:size(ev,1)]...)
@@ -105,7 +105,6 @@ function larTriangulate(W::Array{Float64,2},FW::Array{Array{Int64,1},1},EW::Arra
 	FE = crossRelation(FW,EW)
 	TW = Array{Array{Int64,2},1}()
 	for (f,face) in enumerate(FW)
-		@show (f,face),"larTriangulate"
 		# submanifold mapping and 2D projection
 		vs = hcat([W[:,v] for v in face]...)
 		fv = [[v for v=1:length(face)]]
