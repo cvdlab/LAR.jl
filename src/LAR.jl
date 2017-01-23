@@ -461,7 +461,7 @@ function toroidalsurface(r,R,m=10,n=20,angle1=2pi,angle2=2pi)
 end
 
 # topological validation of cellular complexes 
-function larvalidate(V,lar,prec=10^5) # prec for precision
+function larvalidate(V,lar,prec=10^15) # prec for precision
 	W = zeros!(map(round, V*prec)/prec)
 	vdict = Dict([ ("$(W[:,k])",k) for k=1:size(W,2) ])
 	verts = Dict(zip( keys(vdict), 1:length(vdict) ))

@@ -1,13 +1,13 @@
 
 # Rounding of vectors to a given number of significant digits
-vcode(v::Verts,prec=10^8) = zeros!(map(round, v*prec)/prec)
-vcode(v::Vector,prec=10^8) = zeros!(map(round, v*prec)/prec)
+vcode(v::Verts,prec=10^15) = zeros!(map(round, v*prec)/prec)
+vcode(v::Vector,prec=10^15) = zeros!(map(round, v*prec)/prec)
 
 # random 2D point with given number of digits.
 # A single 2D random point, codified in floating point format, and with a fixed (quite small)
 # number of digits, is returned by the \texttt{rand_point2d()} function, with no input
 # parameters.
-rand_point2d(prec=10^5) = vcode(rand(2,1))
+rand_point2d(prec=10^15) = vcode(rand(2,1))
     
 # Generation of a random line segment.
 # A single random segment, scaled about its centroid by the \texttt{scaling} parameter, is
@@ -335,7 +335,7 @@ function larModelCheck(V,EV)
 end
 
 # Transform a lineArray (Array of pairs of 2D points) into a 1-complex (V,EV)
-function lines2lar(lineArray,prec=10^4)
+function lines2lar(lineArray,prec=10^15)
 	lineFrags = lineIntersection(lineArray)
 	
 	verts = zeros(2,1)
