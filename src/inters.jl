@@ -1,7 +1,7 @@
 
 # Rounding of vectors to a given number of significant digits
-vcode(v::Verts,prec=10^15) = zeros!(map(round, v*prec)/prec)
-vcode(v::Vector,prec=10^15) = zeros!(map(round, v*prec)/prec)
+vcode(v::Verts,prec=10^7) = zeros!(map(round, v*prec)/prec)
+vcode(v::Vector,prec=10^7) = zeros!(map(round, v*prec)/prec)
 
 # random 2D point with given number of digits.
 # A single 2D random point, codified in floating point format, and with a fixed (quite small)
@@ -330,7 +330,8 @@ function larModelCheck(V,EV)
 	V = hcat([V[:,k] for k in vkeys]...)
 	EV = hcat([sort(EW[:,k]) for k=1:size(EW,2)]...)
 	EV = sortcols(EV, by=x->(x[1],x[2]))
-	#EV = check4DoubleEdges(EV)
+	EV = sortrows(EV)
+	EV = check4Edges(EV)
 	V,EV
 end
 

@@ -235,7 +235,9 @@ function checkLines4equalPoints(lines)
 			b = reshape(line,2,Int(length(line)/2))
 			line = vcat(p.pruneVertices(b')[1]...)
 		end
-		push!(out,line)
+		if (line[1,:]!=line[3,:]) | (line[2,:]!=line[4,:])
+			push!(out,line)
+		end
 	end
 	out
 end
@@ -359,6 +361,7 @@ function spacePartition(V::Array{Float64,2}, FV::Array{Array{Int64,1},1},
 	end
 	""" return the **valid** `LAR` 2-skeleton model `(W,FW,EW)` """
 	U,FU,EU = remap(Vertices,Faces,Edges)
+	@show length(U),length(FU),length(EU)
 end
 
 

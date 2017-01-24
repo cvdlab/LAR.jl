@@ -7,31 +7,6 @@ using PyCall
 @pyimport triangle
 
 
-v,(vv,ev,fv,cv) = p.larCuboids((3,2,2),true)
-V = hcat([Array{Float64,1}(v[k,:]) for k=1:size(v,1)]...)
-FV = hcat([Array{Int64,1}(fv[k,:]+1) for k=1:size(fv,1)]...)
-EV = hcat([Array{Int64,1}(ev[k,:]+1) for k=1:size(ev,1)]...)
-model1 = Any[V,FV,EV]
-
-W = hcat([V[:,k] + [.5;0.5;0.] for k=1:size(V,2)]...)
-W = rotate([0,0,π/6],W)
-FW = copy(FV)
-EW = copy(EV)
-model2 = Any[W,FW,EW]
-
-models = [model1,model2]
-X,FX,EX = cmerge(models)
-
-viewexploded(X,FX)
-viewexploded(X,EX)
-
-V,FV,EV = deepcopy((X,FX,EX))
-W,FW,EW = spacePartition(V,FV,EV)
-
-viewexploded(W,EW)
-viewexploded(W,FW)
-
-
 function chainCoords(EW,rows)
 	edges = hcat([EW[:,e] for e in rows]...)
 	for k=1:length(edges)
@@ -67,9 +42,6 @@ function boundary_2(EW,FW)
 	return sparse(I,J,V)
 end
 
-full(boundary_2(EW,FW))
-
-viewLarIndices(W,EW,FW,2)
 
 function edgeSlopeOrdering(VE,V,EV)
  	VE_sorted = Array{Array{Int64,1},1}()
@@ -144,6 +116,36 @@ function boundary_3(W,EW,FW)
 	#forwardBackward = edgeSlopeOrdering(VE,V,EV)
 	
 end
+
+
+v,(vv,ev,fv,cv) = p.larCuboids((3,3,1),true)
+V = hcat([Array{Float64,1}(v[k,:]) for k=1:size(v,1)]...)
+FV = hcat([Array{Int64,1}(fv[k,:]+1) for k=1:size(fv,1)]...)
+EV = hcat([Array{Int64,1}(ev[k,:]+1) for k=1:size(ev,1)]...)
+model1 = Any[V,FV,EV]
+
+W = hcat([V[:,k] + [.5;0.5;0.5] for k=1:size(V,2)]...)
+#W = rotate([0,0,π/6],W)
+FW = copy(FV)
+EW = copy(EV)
+model2 = Any[W,FW,EW]
+
+models = [model1,model2]
+X,FX,EX = cmerge(models)
+
+viewexploded(X,FX)
+viewexploded(X,EX)
+
+V,FV,EV = deepcopy((X,FX,EX))
+W,FW,EW = spacePartition(V,FV,EV)
+
+viewexploded(W,EW)
+viewexploded(W,FW)
+
+
+#full(boundary_2(EW,FW))
+#viewLarIndices(W,EW,FW,2)
+
 
 TW = larTriangulate(W,FW,EW)
 viewexploded(W,vcat(TW...)')
