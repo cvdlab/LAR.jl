@@ -331,7 +331,7 @@ function larModelCheck(V,EV)
 	EV = hcat([sort(EW[:,k]) for k=1:size(EW,2)]...)
 	EV = sortcols(EV, by=x->(x[1],x[2]))
 	EV = sortrows(EV)
-	EV = check4Edges(EV)
+	#EV = check4Edges(EV)
 	V,EV
 end
 
